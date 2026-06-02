@@ -18,12 +18,42 @@ const opciones = [
   "No la quiero ver",
 ];
 
+const plataformas = [
+  "Netflix",
+  "Prime Video",
+  "Disney+",
+  "Max",
+  "Apple TV",
+  "MUBI",
+  "YouTube",
+  "Cine",
+  "Otra",
+];
+
+const moods = [
+  "Comedia",
+  "Acción",
+  "Drama",
+  "Terror",
+  "Familiar",
+  "Animada",
+  "Para pensar",
+  "Clásica",
+  "Rara / de culto",
+  "Dominguera",
+];
+
 function App() {
   const [peliculas, setPeliculas] = useState([]);
+
   const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [persona, setPersona] = useState(personasCasa[0]);
   const [poster, setPoster] = useState("");
+  const [plataforma, setPlataforma] = useState("");
+  const [duracion, setDuracion] = useState("");
+  const [mood, setMood] = useState("");
+
   const [filtro, setFiltro] = useState("pendientes");
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -54,9 +84,15 @@ function App() {
         pelicula.opiniones && !Array.isArray(pelicula.opiniones)
           ? pelicula.opiniones
           : {},
+      calificaciones:
+        pelicula.calificaciones && !Array.isArray(pelicula.calificaciones)
+          ? pelicula.calificaciones
+          : {},
       poster: pelicula.poster || "",
       descripcion: pelicula.descripcion || "",
-      calificacion: pelicula.calificacion || "",
+      plataforma: pelicula.plataforma || "",
+      duracion: pelicula.duracion || "",
+      mood: pelicula.mood || "",
       vista: pelicula.vista || false,
     };
   }
@@ -104,13 +140,16 @@ function App() {
     }
 
     const nuevaPelicula = {
-      titulo: titulo,
-      descripcion: descripcion,
-      persona: persona,
-      poster: poster,
+      titulo,
+      descripcion,
+      persona,
+      poster,
+      plataforma,
+      duracion,
+      mood,
       opiniones: {},
+      calificaciones: {},
       vista: false,
-      calificacion: null,
     };
 
     const { error } = await supabase.from("peliculas").insert([nuevaPelicula]);
@@ -125,6 +164,10 @@ function App() {
     setDescripcion("");
     setPersona(personasCasa[0]);
     setPoster("");
+    setPlataforma("");
+    setDuracion("");
+    setMood("");
+
     cargarPeliculas();
   }
 
@@ -158,6 +201,41 @@ function App() {
     );
   }
 
+  async function calificarPelicula(id, personaQueCalifica, calificacion) {
+    const peliculaActual = peliculas.find((pelicula) => pelicula.id === id);
+
+    if (!peliculaActual) return;
+
+    const nuevasCalificaciones = {
+      ...peliculaActual.calificaciones,
+    };
+
+    if (calificacion === "") {
+      delete nuevasCalificaciones[personaQueCalifica];
+    } else {
+      nuevasCalificaciones[personaQueCalifica] = Number(calificacion);
+    }
+
+    const { error } = await supabase
+      .from("peliculas")
+      .update({ calificaciones: nuevasCalificaciones })
+      .eq("id", id);
+
+    if (error) {
+      console.error(error);
+      alert("No se pudo guardar la calificación.");
+      return;
+    }
+
+    setPeliculas(
+      peliculas.map((pelicula) =>
+        pelicula.id === id
+          ? { ...pelicula, calificaciones: nuevasCalificaciones }
+          : pelicula
+      )
+    );
+  }
+
   function calcularPuntos(opiniones) {
     return Object.values(opiniones).reduce((total, opinion) => {
       if (opinion === "Me urge verla") return total + 3;
@@ -172,6 +250,15 @@ function App() {
     return Object.values(opiniones).filter(
       (opinion) => opinion === opcionBuscada
     ).length;
+  }
+
+  function calcularPromedio(calificaciones) {
+    const valores = Object.values(calificaciones);
+
+    if (valores.length === 0) return null;
+
+    const suma = valores.reduce((total, valor) => total + Number(valor), 0);
+    return (suma / valores.length).toFixed(1);
   }
 
   async function marcarVista(id) {
@@ -196,7 +283,7 @@ function App() {
   async function marcarPendiente(id) {
     const { error } = await supabase
       .from("peliculas")
-      .update({ vista: false, calificacion: null })
+      .update({ vista: false })
       .eq("id", id);
 
     if (error) {
@@ -207,32 +294,7 @@ function App() {
 
     setPeliculas(
       peliculas.map((pelicula) =>
-        pelicula.id === id
-          ? { ...pelicula, vista: false, calificacion: "" }
-          : pelicula
-      )
-    );
-  }
-
-  async function calificarPelicula(id, calificacion) {
-    const valor = calificacion === "" ? null : Number(calificacion);
-
-    const { error } = await supabase
-      .from("peliculas")
-      .update({ calificacion: valor })
-      .eq("id", id);
-
-    if (error) {
-      console.error(error);
-      alert("No se pudo guardar la calificación.");
-      return;
-    }
-
-    setPeliculas(
-      peliculas.map((pelicula) =>
-        pelicula.id === id
-          ? { ...pelicula, calificacion: valor || "" }
-          : pelicula
+        pelicula.id === id ? { ...pelicula, vista: false } : pelicula
       )
     );
   }
@@ -260,14 +322,20 @@ function App() {
   });
 
   const peliculasOrdenadas = [...peliculasFiltradas].sort((a, b) => {
+    if (filtro === "vistas") {
+      const promedioA = Number(calcularPromedio(a.calificaciones) || 0);
+      const promedioB = Number(calcularPromedio(b.calificaciones) || 0);
+      return promedioB - promedioA;
+    }
+
     return calcularPuntos(b.opiniones) - calcularPuntos(a.opiniones);
   });
 
   return (
     <main className="contenedor">
       <header className="encabezado">
-        <h1>🎬 Películas Cauda</h1>
-        <p>Lista de películas para ver.</p>
+        <h1>🎬 Capricho di Rob</h1>
+        <p>Lista familiar para sugerir películas y elegir mejor.</p>
       </header>
 
       <form className="formulario" onSubmit={agregarPelicula}>
@@ -282,6 +350,34 @@ function App() {
           {personasCasa.map((nombre) => (
             <option key={nombre} value={nombre}>
               {nombre}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={plataforma}
+          onChange={(e) => setPlataforma(e.target.value)}
+        >
+          <option value="">Plataforma</option>
+          {plataformas.map((opcion) => (
+            <option key={opcion} value={opcion}>
+              {opcion}
+            </option>
+          ))}
+        </select>
+
+        <input
+          type="text"
+          placeholder="Duración: 1h 45min"
+          value={duracion}
+          onChange={(e) => setDuracion(e.target.value)}
+        />
+
+        <select value={mood} onChange={(e) => setMood(e.target.value)}>
+          <option value="">Mood / tipo</option>
+          {moods.map((opcion) => (
+            <option key={opcion} value={opcion}>
+              {opcion}
             </option>
           ))}
         </select>
@@ -333,122 +429,154 @@ function App() {
         ) : peliculasOrdenadas.length === 0 ? (
           <p className="vacio">No hay películas en este filtro.</p>
         ) : (
-          peliculasOrdenadas.map((pelicula) => (
-            <article
-              key={pelicula.id}
-              className={pelicula.vista ? "pelicula vista" : "pelicula"}
-            >
-              <div className="poster">
-                {pelicula.poster ? (
-                  <img src={pelicula.poster} alt={pelicula.titulo} />
-                ) : (
-                  <div className="sin-poster">🎞️</div>
-                )}
-              </div>
+          peliculasOrdenadas.map((pelicula) => {
+            const promedio = calcularPromedio(pelicula.calificaciones);
 
-              <div className="contenido-pelicula">
-                <div className="datos-pelicula">
-                  <div>
-                    <h2>{pelicula.titulo}</h2>
-                    <p>Por: {pelicula.persona}</p>
-
-                    {pelicula.descripcion && (
-                      <p className="descripcion">{pelicula.descripcion}</p>
-                    )}
-
-                    {pelicula.vista && pelicula.calificacion && (
-                      <p className="calificacion">
-                        Calificación: {"⭐".repeat(pelicula.calificacion)}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="puntaje">
-                    {calcularPuntos(pelicula.opiniones)}
-                  </div>
+            return (
+              <article
+                key={pelicula.id}
+                className={pelicula.vista ? "pelicula vista" : "pelicula"}
+              >
+                <div className="poster">
+                  {pelicula.poster ? (
+                    <img src={pelicula.poster} alt={pelicula.titulo} />
+                  ) : (
+                    <div className="sin-poster">🎞️</div>
+                  )}
                 </div>
 
-                {!pelicula.vista && (
-                  <div className="opiniones-personas">
-                    {personasCasa.map((nombre) => (
-                      <div key={nombre} className="opinion-persona">
-                        <span>{nombre}</span>
+                <div className="contenido-pelicula">
+                  <div className="datos-pelicula">
+                    <div>
+                      <h2>{pelicula.titulo}</h2>
+                      <p>Por: {pelicula.persona}</p>
 
-                        <select
-                          value={pelicula.opiniones[nombre] || ""}
-                          onChange={(e) =>
-                            agregarOpinion(pelicula.id, nombre, e.target.value)
-                          }
-                        >
-                          <option value="">Sin opinión</option>
-
-                          {opciones.map((opcion) => (
-                            <option key={opcion} value={opcion}>
-                              {opcion}
-                            </option>
-                          ))}
-                        </select>
+                      <div className="etiquetas">
+                        {pelicula.plataforma && (
+                          <span>📺 {pelicula.plataforma}</span>
+                        )}
+                        {pelicula.duracion && <span>⏱️ {pelicula.duracion}</span>}
+                        {pelicula.mood && <span>🎭 {pelicula.mood}</span>}
                       </div>
-                    ))}
+
+                      {pelicula.descripcion && (
+                        <p className="descripcion">{pelicula.descripcion}</p>
+                      )}
+
+                      {pelicula.vista && promedio && (
+                        <p className="calificacion">
+                          Promedio: ⭐ {promedio} / 5
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="puntaje">
+                      {pelicula.vista
+                        ? promedio || "-"
+                        : calcularPuntos(pelicula.opiniones)}
+                    </div>
                   </div>
-                )}
 
-                {!pelicula.vista && (
-                  <div className="resumen-opiniones">
-                    <span>
-                      🔥 {contarOpiniones(pelicula.opiniones, "Me urge verla")}
-                    </span>
-                    <span>
-                      ✅ {contarOpiniones(pelicula.opiniones, "La quiero ver")}
-                    </span>
-                    <span>
-                      🤔 {contarOpiniones(pelicula.opiniones, "Puede que sí")}
-                    </span>
-                    <span>
-                      ❌{" "}
-                      {contarOpiniones(pelicula.opiniones, "No la quiero ver")}
-                    </span>
-                  </div>
-                )}
+                  {!pelicula.vista && (
+                    <div className="opiniones-personas">
+                      {personasCasa.map((nombre) => (
+                        <div key={nombre} className="opinion-persona">
+                          <span>{nombre}</span>
 
-                {pelicula.vista && (
-                  <div className="calificar">
-                    <span>Calificar:</span>
+                          <select
+                            value={pelicula.opiniones[nombre] || ""}
+                            onChange={(e) =>
+                              agregarOpinion(
+                                pelicula.id,
+                                nombre,
+                                e.target.value
+                              )
+                            }
+                          >
+                            <option value="">Sin opinión</option>
 
-                    <select
-                      value={pelicula.calificacion || ""}
-                      onChange={(e) =>
-                        calificarPelicula(pelicula.id, e.target.value)
-                      }
-                    >
-                      <option value="">Sin calificación</option>
-                      <option value="1">⭐ 1</option>
-                      <option value="2">⭐⭐ 2</option>
-                      <option value="3">⭐⭐⭐ 3</option>
-                      <option value="4">⭐⭐⭐⭐ 4</option>
-                      <option value="5">⭐⭐⭐⭐⭐ 5</option>
-                    </select>
-                  </div>
-                )}
-
-                <div className="acciones">
-                  {pelicula.vista ? (
-                    <button onClick={() => marcarPendiente(pelicula.id)}>
-                      Marcar pendiente
-                    </button>
-                  ) : (
-                    <button onClick={() => marcarVista(pelicula.id)}>
-                      Marcar vista
-                    </button>
+                            {opciones.map((opcion) => (
+                              <option key={opcion} value={opcion}>
+                                {opcion}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      ))}
+                    </div>
                   )}
 
-                  <button onClick={() => borrarPelicula(pelicula.id)}>
-                    Borrar
-                  </button>
+                  {!pelicula.vista && (
+                    <div className="resumen-opiniones">
+                      <span>
+                        🔥{" "}
+                        {contarOpiniones(pelicula.opiniones, "Me urge verla")}
+                      </span>
+                      <span>
+                        ✅{" "}
+                        {contarOpiniones(pelicula.opiniones, "La quiero ver")}
+                      </span>
+                      <span>
+                        🤔{" "}
+                        {contarOpiniones(pelicula.opiniones, "Puede que sí")}
+                      </span>
+                      <span>
+                        ❌{" "}
+                        {contarOpiniones(
+                          pelicula.opiniones,
+                          "No la quiero ver"
+                        )}
+                      </span>
+                    </div>
+                  )}
+
+                  {pelicula.vista && (
+                    <div className="calificaciones-personas">
+                      {personasCasa.map((nombre) => (
+                        <div key={nombre} className="calificacion-persona">
+                          <span>{nombre}</span>
+
+                          <select
+                            value={pelicula.calificaciones[nombre] || ""}
+                            onChange={(e) =>
+                              calificarPelicula(
+                                pelicula.id,
+                                nombre,
+                                e.target.value
+                              )
+                            }
+                          >
+                            <option value="">Sin calificar</option>
+                            <option value="1">⭐ 1</option>
+                            <option value="2">⭐⭐ 2</option>
+                            <option value="3">⭐⭐⭐ 3</option>
+                            <option value="4">⭐⭐⭐⭐ 4</option>
+                            <option value="5">⭐⭐⭐⭐⭐ 5</option>
+                          </select>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="acciones">
+                    {pelicula.vista ? (
+                      <button onClick={() => marcarPendiente(pelicula.id)}>
+                        Marcar pendiente
+                      </button>
+                    ) : (
+                      <button onClick={() => marcarVista(pelicula.id)}>
+                        Marcar vista
+                      </button>
+                    )}
+
+                    <button onClick={() => borrarPelicula(pelicula.id)}>
+                      Borrar
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))
+              </article>
+            );
+          })
         )}
       </section>
     </main>
