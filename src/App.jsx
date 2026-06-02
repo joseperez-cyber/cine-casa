@@ -104,6 +104,7 @@ function App() {
   const [editandoId, setEditandoId] = useState(null);
   const [formularioAbierto, setFormularioAbierto] = useState(false);
   const [seleccionHoyAbierta, setSeleccionHoyAbierta] = useState(true);
+  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
   const [peliculaSeleccionadaId, setPeliculaSeleccionadaId] = useState(null);
   const [trailerAbierto, setTrailerAbierto] = useState(false);
 
@@ -921,16 +922,27 @@ function App() {
         )}
       </section>
 
-      <section className="buscador">
-        <input
-          type="text"
-          placeholder="Buscar por título, descripción, género, reparto o año..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-        />
+      <section className="panel-filtros-mobile">
+        <button
+          className="boton-desplegar-filtros"
+          onClick={() => setFiltrosAbiertos(!filtrosAbiertos)}
+        >
+          <span>🔎 Filtros y búsqueda</span>
+          <span>{filtrosAbiertos ? "▲" : "▼"}</span>
+        </button>
       </section>
 
-      <section className="filtros">
+      <div className={filtrosAbiertos ? "zona-filtros abierta" : "zona-filtros"}>
+        <section className="buscador">
+          <input
+            type="text"
+            placeholder="Buscar película..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+        </section>
+
+        <section className="filtros">
         <button
           className={filtro === "pendientes" ? "filtro-activo" : ""}
           onClick={() => setFiltro("pendientes")}
@@ -988,8 +1000,9 @@ function App() {
           Limpiar filtros
         </button>
 
-        <button onClick={cargarPeliculas}>Actualizar</button>
-      </section>
+          <button onClick={cargarPeliculas}>Actualizar</button>
+        </section>
+      </div>
 
       {mejorOpcion && (
         <section className="panel-seleccion-hoy">
