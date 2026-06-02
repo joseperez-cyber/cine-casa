@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 const personasCasa = [
-  "José",
-  "Persona 2",
-  "Persona 3",
-  "Persona 4",
-  "Persona 5",
-  "Persona 6",
+  "Paco",
+  "P.Alex",
+  "Pala",
+  "Maik",
+  "Chema",
+  "P. RobV",
 ];
 
 const opciones = [
@@ -168,8 +168,8 @@ function App() {
   return (
     <main className="contenedor">
       <header className="encabezado">
-        <h1>🎬 ¿Qué vemos hoy?</h1>
-        <p>Lista familiar para sugerir películas y elegir mejor.</p>
+        <h1>🎬 Capricho di Rob</h1>
+        <p>Lista de Películas Cauda.</p>
       </header>
 
       <form className="formulario" onSubmit={agregarPelicula}>
