@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import { supabase } from "./supabase";
 
 const personasCasa = [
   "Paco",
@@ -18,31 +19,64 @@ const opciones = [
 ];
 
 function App() {
-  const [peliculas, setPeliculas] = useState(() => {
-    const peliculasGuardadas = localStorage.getItem("peliculas-casa");
-
-    if (peliculasGuardadas) {
-      return JSON.parse(peliculasGuardadas).map((pelicula) => ({
-        ...pelicula,
-        opiniones:
-          pelicula.opiniones && !Array.isArray(pelicula.opiniones)
-            ? pelicula.opiniones
-            : {},
-        poster: pelicula.poster || "",
-      }));
-    }
-
-    return [];
-  });
-
+  const [peliculas, setPeliculas] = useState([]);
   const [titulo, setTitulo] = useState("");
   const [persona, setPersona] = useState(personasCasa[0]);
   const [poster, setPoster] = useState("");
   const [filtro, setFiltro] = useState("pendientes");
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    localStorage.setItem("peliculas-casa", JSON.stringify(peliculas));
-  }, [peliculas]);
+    cargarPeliculas();
+
+    const canal = supabase
+      .channel("peliculas-cambios")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "peliculas" },
+        () => {
+          cargarPeliculas();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(canal);
+    };
+  }, []);
+
+  function normalizarPelicula(pelicula) {
+    return {
+      ...pelicula,
+      opiniones:
+        pelicula.opiniones && !Array.isArray(pelicula.opiniones)
+          ? pelicula.opiniones
+          : {},
+      poster: pelicula.poster || "",
+      vista: pelicula.vista || false,
+    };
+  }
+
+  async function cargarPeliculas() {
+    setCargando(true);
+    setError("");
+
+    const { data, error } = await supabase
+      .from("peliculas")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      setError("No se pudieron cargar las películas.");
+      setCargando(false);
+      return;
+    }
+
+    setPeliculas(data.map(normalizarPelicula));
+    setCargando(false);
+  }
 
   function convertirPoster(evento) {
     const archivo = evento.target.files[0];
@@ -58,7 +92,7 @@ function App() {
     lector.readAsDataURL(archivo);
   }
 
-  function agregarPelicula(evento) {
+  async function agregarPelicula(evento) {
     evento.preventDefault();
 
     if (titulo.trim() === "") {
@@ -67,7 +101,6 @@ function App() {
     }
 
     const nuevaPelicula = {
-      id: Date.now(),
       titulo: titulo,
       persona: persona,
       poster: poster,
@@ -75,29 +108,48 @@ function App() {
       vista: false,
     };
 
-    setPeliculas([...peliculas, nuevaPelicula]);
+    const { error } = await supabase.from("peliculas").insert([nuevaPelicula]);
+
+    if (error) {
+      console.error(error);
+      alert("No se pudo agregar la película.");
+      return;
+    }
 
     setTitulo("");
     setPersona(personasCasa[0]);
     setPoster("");
+    cargarPeliculas();
   }
 
-  function agregarOpinion(id, personaQueOpina, opinion) {
-    const nuevasPeliculas = peliculas.map((pelicula) => {
-      if (pelicula.id === id) {
-        return {
-          ...pelicula,
-          opiniones: {
-            ...pelicula.opiniones,
-            [personaQueOpina]: opinion,
-          },
-        };
-      }
+  async function agregarOpinion(id, personaQueOpina, opinion) {
+    const peliculaActual = peliculas.find((pelicula) => pelicula.id === id);
 
-      return pelicula;
-    });
+    if (!peliculaActual) return;
 
-    setPeliculas(nuevasPeliculas);
+    const nuevasOpiniones = {
+      ...peliculaActual.opiniones,
+      [personaQueOpina]: opinion,
+    };
+
+    const { error } = await supabase
+      .from("peliculas")
+      .update({ opiniones: nuevasOpiniones })
+      .eq("id", id);
+
+    if (error) {
+      console.error(error);
+      alert("No se pudo guardar la opinión.");
+      return;
+    }
+
+    setPeliculas(
+      peliculas.map((pelicula) =>
+        pelicula.id === id
+          ? { ...pelicula, opiniones: nuevasOpiniones }
+          : pelicula
+      )
+    );
   }
 
   function calcularPuntos(opiniones) {
@@ -116,43 +168,58 @@ function App() {
     ).length;
   }
 
-  function marcarVista(id) {
-    const nuevasPeliculas = peliculas.map((pelicula) => {
-      if (pelicula.id === id) {
-        return {
-          ...pelicula,
-          vista: true,
-        };
-      }
+  async function marcarVista(id) {
+    const { error } = await supabase
+      .from("peliculas")
+      .update({ vista: true })
+      .eq("id", id);
 
-      return pelicula;
-    });
+    if (error) {
+      console.error(error);
+      alert("No se pudo marcar como vista.");
+      return;
+    }
 
-    setPeliculas(nuevasPeliculas);
+    setPeliculas(
+      peliculas.map((pelicula) =>
+        pelicula.id === id ? { ...pelicula, vista: true } : pelicula
+      )
+    );
   }
 
-  function marcarPendiente(id) {
-    const nuevasPeliculas = peliculas.map((pelicula) => {
-      if (pelicula.id === id) {
-        return {
-          ...pelicula,
-          vista: false,
-        };
-      }
+  async function marcarPendiente(id) {
+    const { error } = await supabase
+      .from("peliculas")
+      .update({ vista: false })
+      .eq("id", id);
 
-      return pelicula;
-    });
+    if (error) {
+      console.error(error);
+      alert("No se pudo marcar como pendiente.");
+      return;
+    }
 
-    setPeliculas(nuevasPeliculas);
+    setPeliculas(
+      peliculas.map((pelicula) =>
+        pelicula.id === id ? { ...pelicula, vista: false } : pelicula
+      )
+    );
   }
 
-  function borrarPelicula(id) {
+  async function borrarPelicula(id) {
     const confirmar = confirm("¿Seguro que quieres borrar esta película?");
 
     if (!confirmar) return;
 
-    const nuevasPeliculas = peliculas.filter((pelicula) => pelicula.id !== id);
-    setPeliculas(nuevasPeliculas);
+    const { error } = await supabase.from("peliculas").delete().eq("id", id);
+
+    if (error) {
+      console.error(error);
+      alert("No se pudo borrar la película.");
+      return;
+    }
+
+    setPeliculas(peliculas.filter((pelicula) => pelicula.id !== id));
   }
 
   const peliculasFiltradas = peliculas.filter((pelicula) => {
@@ -169,7 +236,7 @@ function App() {
     <main className="contenedor">
       <header className="encabezado">
         <h1>🎬 Capricho di Rob</h1>
-        <p>Lista de Películas Cauda.</p>
+        <p>Lista familiar para sugerir películas y elegir mejor.</p>
       </header>
 
       <form className="formulario" onSubmit={agregarPelicula}>
@@ -217,10 +284,16 @@ function App() {
         >
           Todas
         </button>
+
+        <button onClick={cargarPeliculas}>Actualizar</button>
       </section>
 
       <section className="lista">
-        {peliculasOrdenadas.length === 0 ? (
+        {cargando ? (
+          <p className="vacio">Cargando películas...</p>
+        ) : error ? (
+          <p className="vacio">{error}</p>
+        ) : peliculasOrdenadas.length === 0 ? (
           <p className="vacio">No hay películas en este filtro.</p>
         ) : (
           peliculasOrdenadas.map((pelicula) => (
