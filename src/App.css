@@ -64,6 +64,33 @@ textarea {
   line-height: 1.5;
 }
 
+/* PANEL AGREGAR */
+
+.panel-agregar {
+  margin-bottom: 14px;
+}
+
+.boton-desplegar-formulario {
+  width: 100%;
+  background: rgba(22, 27, 39, 0.92);
+  color: var(--texto);
+  border: 1px solid var(--linea);
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.boton-desplegar-formulario:hover {
+  border-color: rgba(250, 204, 21, 0.35);
+  background: rgba(31, 41, 55, 0.92);
+}
+
 /* FORMULARIO */
 
 .formulario {
@@ -74,7 +101,7 @@ textarea {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 0;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(10px);
 }

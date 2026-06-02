@@ -61,6 +61,7 @@ function App() {
 
   const [editandoId, setEditandoId] = useState(null);
   const [peliculaAbiertaId, setPeliculaAbiertaId] = useState(null);
+  const [formularioAbierto, setFormularioAbierto] = useState(false);
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -147,6 +148,7 @@ function App() {
     setDuracion("");
     setMood("");
     setEditandoId(null);
+    setFormularioAbierto(false);
   }
 
   async function guardarPelicula(evento) {
@@ -205,6 +207,7 @@ function App() {
 
   function empezarEdicion(pelicula) {
     setEditandoId(pelicula.id);
+    setFormularioAbierto(true);
     setTitulo(pelicula.titulo || "");
     setDescripcion(pelicula.descripcion || "");
     setPersona(pelicula.persona || personasCasa[0]);
@@ -427,80 +430,98 @@ function App() {
         <p>Lista familiar para sugerir películas y elegir mejor.</p>
       </header>
 
-      <form
-        className={editandoId ? "formulario editando" : "formulario"}
-        onSubmit={guardarPelicula}
-      >
-        {editandoId && (
-          <div className="aviso-edicion">
-            Editando película. Guarda los cambios o cancela la edición.
-          </div>
-        )}
-
-        <input
-          type="text"
-          placeholder="Nombre de la película"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-        />
-
-        <select value={persona} onChange={(e) => setPersona(e.target.value)}>
-          {personasCasa.map((nombre) => (
-            <option key={nombre} value={nombre}>
-              {nombre}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={plataforma}
-          onChange={(e) => setPlataforma(e.target.value)}
+      <section className="panel-agregar">
+        <button
+          className="boton-desplegar-formulario"
+          onClick={() => setFormularioAbierto(!formularioAbierto)}
         >
-          <option value="">Plataforma</option>
-          {plataformas.map((opcion) => (
-            <option key={opcion} value={opcion}>
-              {opcion}
-            </option>
-          ))}
-        </select>
-
-        <input
-          type="text"
-          placeholder="Duración: 1h 45min"
-          value={duracion}
-          onChange={(e) => setDuracion(e.target.value)}
-        />
-
-        <select value={mood} onChange={(e) => setMood(e.target.value)}>
-          <option value="">Mood / tipo</option>
-          {moods.map((opcion) => (
-            <option key={opcion} value={opcion}>
-              {opcion}
-            </option>
-          ))}
-        </select>
-
-        <label className="subir-poster">
-          {poster ? "✅ Póster cargado" : "Subir póster"}
-          <input type="file" accept="image/*" onChange={convertirPoster} />
-        </label>
-
-        <button type="submit">
-          {editandoId ? "Guardar cambios" : "Agregar"}
+          <span>
+            {formularioAbierto
+              ? editandoId
+                ? "Editando película"
+                : "Agregar película"
+              : "+ Agregar película"}
+          </span>
+          <span>{formularioAbierto ? "▲" : "▼"}</span>
         </button>
 
-        {editandoId && (
-          <button type="button" onClick={limpiarFormulario}>
-            Cancelar
-          </button>
-        )}
+        {formularioAbierto && (
+          <form
+            className={editandoId ? "formulario editando" : "formulario"}
+            onSubmit={guardarPelicula}
+          >
+            {editandoId && (
+              <div className="aviso-edicion">
+                Editando película. Guarda los cambios o cancela la edición.
+              </div>
+            )}
 
-        <textarea
-          placeholder="Descripción breve de la película"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-        />
-      </form>
+            <input
+              type="text"
+              placeholder="Nombre de la película"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+            />
+
+            <select value={persona} onChange={(e) => setPersona(e.target.value)}>
+              {personasCasa.map((nombre) => (
+                <option key={nombre} value={nombre}>
+                  {nombre}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={plataforma}
+              onChange={(e) => setPlataforma(e.target.value)}
+            >
+              <option value="">Plataforma</option>
+              {plataformas.map((opcion) => (
+                <option key={opcion} value={opcion}>
+                  {opcion}
+                </option>
+              ))}
+            </select>
+
+            <input
+              type="text"
+              placeholder="Duración: 1h 45min"
+              value={duracion}
+              onChange={(e) => setDuracion(e.target.value)}
+            />
+
+            <select value={mood} onChange={(e) => setMood(e.target.value)}>
+              <option value="">Mood / tipo</option>
+              {moods.map((opcion) => (
+                <option key={opcion} value={opcion}>
+                  {opcion}
+                </option>
+              ))}
+            </select>
+
+            <label className="subir-poster">
+              {poster ? "✅ Póster cargado" : "Subir póster"}
+              <input type="file" accept="image/*" onChange={convertirPoster} />
+            </label>
+
+            <button type="submit">
+              {editandoId ? "Guardar cambios" : "Agregar"}
+            </button>
+
+            {editandoId && (
+              <button type="button" onClick={limpiarFormulario}>
+                Cancelar
+              </button>
+            )}
+
+            <textarea
+              placeholder="Descripción breve de la película"
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+            />
+          </form>
+        )}
+      </section>
 
       <section className="buscador">
         <input
