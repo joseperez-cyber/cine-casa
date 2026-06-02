@@ -560,6 +560,72 @@ button:hover,
   color: var(--texto-suave);
 }
 
+/* COLORES DE OPINIONES */
+
+.opinion-persona {
+  transition: border 0.15s ease, background 0.15s ease;
+}
+
+.opinion-urge {
+  background: rgba(250, 204, 21, 0.12);
+  border-color: rgba(250, 204, 21, 0.42);
+}
+
+.opinion-urge span {
+  color: #facc15;
+}
+
+.opinion-quiere {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.42);
+}
+
+.opinion-quiere span {
+  color: #86efac;
+}
+
+.opinion-puede {
+  background: rgba(99, 102, 241, 0.13);
+  border-color: rgba(99, 102, 241, 0.45);
+}
+
+.opinion-puede span {
+  color: #a5b4fc;
+}
+
+.opinion-no {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.42);
+}
+
+.opinion-no span {
+  color: #fca5a5;
+}
+
+.resumen-opiniones span:nth-child(1) {
+  background: rgba(250, 204, 21, 0.12);
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.35);
+}
+
+.resumen-opiniones span:nth-child(2) {
+  background: rgba(34, 197, 94, 0.12);
+  color: #86efac;
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.resumen-opiniones span:nth-child(3) {
+  background: rgba(99, 102, 241, 0.13);
+  color: #a5b4fc;
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+.resumen-opiniones span:nth-child(4) {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
 /* ACCIONES */
 
 .acciones {
@@ -596,17 +662,34 @@ button:hover,
 /* PELÍCULAS VISTAS */
 
 .vista {
-  opacity: 0.65;
+  opacity: 1;
+  border-color: rgba(34, 197, 94, 0.55);
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(34, 197, 94, 0.18);
 }
 
-.vista .poster img {
-  filter: grayscale(0.5);
+.vista:hover {
+  border-color: rgba(34, 197, 94, 0.85);
+  box-shadow:
+    0 22px 42px rgba(0, 0, 0, 0.32),
+    0 0 0 1px rgba(34, 197, 94, 0.3);
 }
 
-.vista h2 {
-  text-decoration: line-through;
-  text-decoration-thickness: 1px;
-  text-decoration-color: var(--texto-suave);
+.badge-vista {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 10px;
+  background: rgba(34, 197, 94, 0.13);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* VACÍO */

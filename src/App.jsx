@@ -293,6 +293,14 @@ function App() {
     );
   }
 
+  function obtenerClaseOpinion(opinion) {
+    if (opinion === "Me urge verla") return "opinion-urge";
+    if (opinion === "La quiero ver") return "opinion-quiere";
+    if (opinion === "Puede que sí") return "opinion-puede";
+    if (opinion === "No la quiero ver") return "opinion-no";
+    return "";
+  }
+
   function calcularPuntos(opiniones) {
     return Object.values(opiniones).reduce((total, opinion) => {
       if (opinion === "Me urge verla") return total + 3;
@@ -650,6 +658,8 @@ function App() {
                   )}
                 </div>
 
+                {pelicula.vista && <div className="badge-vista">Vista</div>}
+
                 <div className="contenido-pelicula">
                   <div className="datos-pelicula">
                     <div>
@@ -748,7 +758,12 @@ function App() {
 
                   <div className="opiniones-personas">
                     {personasCasa.map((nombre) => (
-                      <div key={nombre} className="opinion-persona">
+                      <div
+                        key={nombre}
+                        className={`opinion-persona ${obtenerClaseOpinion(
+                          peliculaSeleccionada.opiniones[nombre]
+                        )}`}
+                      >
                         <span>{nombre}</span>
 
                         <select
