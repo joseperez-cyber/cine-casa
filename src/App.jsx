@@ -1084,9 +1084,9 @@ function App() {
                   <div className="datos-pelicula">
                     <div>
                       <h2>{pelicula.titulo}</h2>
-                      <p>Por: {pelicula.persona}</p>
+                      <p className="info-desktop">Por: {pelicula.persona}</p>
 
-                      <div className="etiquetas">
+                      <div className="etiquetas info-desktop">
                         {pelicula.plataforma && (
                           <span>📺 {pelicula.plataforma}</span>
                         )}
@@ -1106,7 +1106,7 @@ function App() {
                     </div>
                   </div>
 
-                  <p className="abrir-detalle">Abrir ficha</p>
+                  <p className="abrir-detalle info-desktop">Abrir ficha</p>
                 </div>
               </article>
             );
