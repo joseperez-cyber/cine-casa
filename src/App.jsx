@@ -77,6 +77,8 @@ function App() {
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const [streamingMX, setStreamingMX] = useState([]);
+  const [peliculasSimilares, setPeliculasSimilares] = useState([]);
 
   const peliculaSeleccionada = peliculas.find(
     (pelicula) => pelicula.id === peliculaSeleccionadaId
@@ -100,6 +102,38 @@ function App() {
       supabase.removeChannel(canal);
     };
   }, []);
+
+  // Mejora 3: Películas similares al abrir el modal
+  useEffect(() => {
+    if (!peliculaSeleccionadaId) {
+      setPeliculasSimilares([]);
+      return;
+    }
+    const pelicula = peliculas.find((p) => p.id === peliculaSeleccionadaId);
+    if (!pelicula?.tmdb_id) return;
+
+    const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+    if (!apiKey) return;
+
+    fetch(
+      `https://api.themoviedb.org/3/movie/${pelicula.tmdb_id}/similar?api_key=${apiKey}&language=es-MX&page=1`
+    )
+      .then((r) => r.json())
+      .then((datos) => setPeliculasSimilares(datos.results?.slice(0, 4) || []))
+      .catch(() => setPeliculasSimilares([]));
+  }, [peliculaSeleccionadaId]);
+
+  // Mejora 1: Debounce — busca en TMDb automáticamente al escribir el título
+  useEffect(() => {
+    if (titulo.trim().length < 3) {
+      setResultadosTmdb([]);
+      return;
+    }
+    const timer = setTimeout(() => {
+      buscarPeliculasTmdb();
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [titulo]);
 
   function normalizarPelicula(pelicula) {
     return {
@@ -175,6 +209,7 @@ function App() {
     setTrailerKey("");
     setResultadosTmdb([]);
     setErrorTmdb("");
+    setStreamingMX([]);
     setEditandoId(null);
     setFormularioAbierto(false);
   }
@@ -256,6 +291,7 @@ function App() {
     setReparto(pelicula.reparto || "");
     setTmdbId(pelicula.tmdb_id || null);
     setTrailerKey(pelicula.trailer_key || "");
+    setStreamingMX([]);
 
     window.scrollTo({
       top: 0,
@@ -339,7 +375,7 @@ function App() {
     setErrorTmdb("");
 
     try {
-      const [respuestaDetalles, respuestaCreditos, respuestaVideos] =
+    const [respuestaDetalles, respuestaCreditos, respuestaVideos, respuestaProveedores] =
         await Promise.all([
           fetch(
             `https://api.themoviedb.org/3/movie/${peliculaTmdb.id}?api_key=${apiKey}&language=es-MX`
@@ -350,11 +386,15 @@ function App() {
           fetch(
             `https://api.themoviedb.org/3/movie/${peliculaTmdb.id}/videos?api_key=${apiKey}&language=es-MX`
           ),
+          fetch(
+            `https://api.themoviedb.org/3/movie/${peliculaTmdb.id}/watch/providers?api_key=${apiKey}`
+          ),
         ]);
 
       const detalles = await respuestaDetalles.json();
       const creditos = await respuestaCreditos.json();
       let videos = await respuestaVideos.json();
+      const proveedores = await respuestaProveedores.json();
 
       if (!respuestaDetalles.ok) {
         throw new Error(detalles.status_message || "Error cargando detalles.");
@@ -388,6 +428,10 @@ function App() {
         : "";
 
       const trailerEncontrado = encontrarTrailer(videos);
+
+      // Mejora 2: Plataformas de streaming disponibles en México
+      const flatrateMX = proveedores?.results?.MX?.flatrate || [];
+      setStreamingMX(flatrateMX);
 
       setTitulo(detalles.title || peliculaTmdb.title || "");
       setDescripcion(detalles.overview || "");
@@ -664,9 +708,11 @@ function App() {
               onChange={(e) => setTitulo(e.target.value)}
             />
 
-            <button type="button" onClick={buscarPeliculasTmdb}>
-              {buscandoTmdb ? "Buscando..." : "Buscar en TMDb"}
-            </button>
+            {buscandoTmdb && (
+              <p className="trailer-detectado" style={{ color: "var(--texto-suave)" }}>
+                🔍 Buscando en TMDb...
+              </p>
+            )}
 
             <select value={persona} onChange={(e) => setPersona(e.target.value)}>
               {personasCasa.map((nombre) => (
@@ -750,6 +796,23 @@ function App() {
               <p className="trailer-detectado">
                 ✅ Tráiler detectado automáticamente
               </p>
+            )}
+
+            {streamingMX.length > 0 && (
+              <div className="streaming-mx">
+                <p className="streaming-mx-titulo">📺 Disponible en México:</p>
+                <div className="streaming-mx-logos">
+                  {streamingMX.map((proveedor) => (
+                    <div key={proveedor.provider_id} className="streaming-logo" title={proveedor.provider_name}>
+                      <img
+                        src={`https://image.tmdb.org/t/p/w45${proveedor.logo_path}`}
+                        alt={proveedor.provider_name}
+                      />
+                      <span>{proveedor.provider_name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
             {errorTmdb && <p className="error-tmdb">{errorTmdb}</p>}
@@ -1162,6 +1225,30 @@ function App() {
                     ))}
                   </div>
                 </>
+              )}
+
+              {peliculasSimilares.length > 0 && (
+                <div className="similares">
+                  <p className="similares-titulo">🎬 Puede que también te guste:</p>
+                  <div className="similares-grid">
+                    {peliculasSimilares.map((sim) => (
+                      <div key={sim.id} className="similar-item">
+                        {sim.poster_path ? (
+                          <img
+                            src={`https://image.tmdb.org/t/p/w154${sim.poster_path}`}
+                            alt={sim.title}
+                          />
+                        ) : (
+                          <div className="similar-sin-poster">🎞️</div>
+                        )}
+                        <span>{sim.title}</span>
+                        {sim.release_date && (
+                          <span className="similar-anio">{sim.release_date.slice(0, 4)}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
 
               <div className="acciones acciones-modal">
