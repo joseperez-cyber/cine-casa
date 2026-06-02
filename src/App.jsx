@@ -54,6 +54,15 @@ function App() {
   const [duracion, setDuracion] = useState("");
   const [mood, setMood] = useState("");
 
+  const [anio, setAnio] = useState("");
+  const [generos, setGeneros] = useState("");
+  const [reparto, setReparto] = useState("");
+  const [tmdbId, setTmdbId] = useState(null);
+
+  const [resultadosTmdb, setResultadosTmdb] = useState([]);
+  const [buscandoTmdb, setBuscandoTmdb] = useState(false);
+  const [errorTmdb, setErrorTmdb] = useState("");
+
   const [filtro, setFiltro] = useState("pendientes");
   const [filtroPlataforma, setFiltroPlataforma] = useState("");
   const [filtroMood, setFiltroMood] = useState("");
@@ -105,6 +114,10 @@ function App() {
       plataforma: pelicula.plataforma || "",
       duracion: pelicula.duracion || "",
       mood: pelicula.mood || "",
+      anio: pelicula.anio || "",
+      generos: pelicula.generos || "",
+      reparto: pelicula.reparto || "",
+      tmdb_id: pelicula.tmdb_id || null,
       vista: pelicula.vista || false,
     };
   }
@@ -151,6 +164,12 @@ function App() {
     setPlataforma("");
     setDuracion("");
     setMood("");
+    setAnio("");
+    setGeneros("");
+    setReparto("");
+    setTmdbId(null);
+    setResultadosTmdb([]);
+    setErrorTmdb("");
     setEditandoId(null);
     setFormularioAbierto(false);
   }
@@ -171,6 +190,10 @@ function App() {
       plataforma,
       duracion,
       mood,
+      anio,
+      generos,
+      reparto,
+      tmdb_id: tmdbId,
     };
 
     if (editandoId) {
@@ -221,11 +244,118 @@ function App() {
     setPlataforma(pelicula.plataforma || "");
     setDuracion(pelicula.duracion || "");
     setMood(pelicula.mood || "");
+    setAnio(pelicula.anio || "");
+    setGeneros(pelicula.generos || "");
+    setReparto(pelicula.reparto || "");
+    setTmdbId(pelicula.tmdb_id || null);
 
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
+  }
+
+  async function buscarPeliculasTmdb() {
+    if (titulo.trim() === "") {
+      alert("Primero escribe el nombre de una película.");
+      return;
+    }
+
+    const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+
+    if (!apiKey) {
+      alert("No se encontró la API key de TMDb.");
+      return;
+    }
+
+    setBuscandoTmdb(true);
+    setErrorTmdb("");
+    setResultadosTmdb([]);
+
+    try {
+      const respuesta = await fetch(
+        `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=es-MX&query=${encodeURIComponent(
+          titulo
+        )}`
+      );
+
+      const datos = await respuesta.json();
+
+      if (!respuesta.ok) {
+        throw new Error(datos.status_message || "Error buscando películas.");
+      }
+
+      setResultadosTmdb(datos.results || []);
+    } catch (error) {
+      console.error(error);
+      setErrorTmdb("No se pudieron buscar películas en TMDb.");
+    } finally {
+      setBuscandoTmdb(false);
+    }
+  }
+
+  async function seleccionarPeliculaTmdb(peliculaTmdb) {
+    const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+
+    if (!apiKey) {
+      alert("No se encontró la API key de TMDb.");
+      return;
+    }
+
+    setBuscandoTmdb(true);
+    setErrorTmdb("");
+
+    try {
+      const [respuestaDetalles, respuestaCreditos] = await Promise.all([
+        fetch(
+          `https://api.themoviedb.org/3/movie/${peliculaTmdb.id}?api_key=${apiKey}&language=es-MX`
+        ),
+        fetch(
+          `https://api.themoviedb.org/3/movie/${peliculaTmdb.id}/credits?api_key=${apiKey}&language=es-MX`
+        ),
+      ]);
+
+      const detalles = await respuestaDetalles.json();
+      const creditos = await respuestaCreditos.json();
+
+      if (!respuestaDetalles.ok) {
+        throw new Error(detalles.status_message || "Error cargando detalles.");
+      }
+
+      const posterUrl = detalles.poster_path
+        ? `https://image.tmdb.org/t/p/w500${detalles.poster_path}`
+        : "";
+
+      const anioPelicula = detalles.release_date
+        ? detalles.release_date.slice(0, 4)
+        : "";
+
+      const generosTexto = detalles.genres
+        ? detalles.genres.map((genero) => genero.name).join(", ")
+        : "";
+
+      const repartoTexto = creditos.cast
+        ? creditos.cast
+            .slice(0, 5)
+            .map((actor) => actor.name)
+            .join(", ")
+        : "";
+
+      setTitulo(detalles.title || peliculaTmdb.title || "");
+      setDescripcion(detalles.overview || "");
+      setPoster(posterUrl);
+      setDuracion(detalles.runtime ? `${detalles.runtime} min` : "");
+      setAnio(anioPelicula);
+      setGeneros(generosTexto);
+      setReparto(repartoTexto);
+      setTmdbId(detalles.id);
+      setResultadosTmdb([]);
+    } catch (error) {
+      console.error(error);
+      setErrorTmdb("No se pudieron cargar los datos de esta película.");
+    } finally {
+      setBuscandoTmdb(false);
+    }
   }
 
   async function agregarOpinion(id, personaQueOpina, opinion) {
@@ -399,7 +529,10 @@ function App() {
     const coincideBusqueda =
       textoBusqueda === "" ||
       pelicula.titulo.toLowerCase().includes(textoBusqueda) ||
-      pelicula.descripcion.toLowerCase().includes(textoBusqueda);
+      pelicula.descripcion.toLowerCase().includes(textoBusqueda) ||
+      pelicula.generos.toLowerCase().includes(textoBusqueda) ||
+      pelicula.reparto.toLowerCase().includes(textoBusqueda) ||
+      pelicula.anio.toLowerCase().includes(textoBusqueda);
 
     return (
       coincideEstado && coincidePlataforma && coincideMood && coincideBusqueda
@@ -430,7 +563,10 @@ function App() {
       const coincideBusqueda =
         textoBusqueda === "" ||
         pelicula.titulo.toLowerCase().includes(textoBusqueda) ||
-        pelicula.descripcion.toLowerCase().includes(textoBusqueda);
+        pelicula.descripcion.toLowerCase().includes(textoBusqueda) ||
+        pelicula.generos.toLowerCase().includes(textoBusqueda) ||
+        pelicula.reparto.toLowerCase().includes(textoBusqueda) ||
+        pelicula.anio.toLowerCase().includes(textoBusqueda);
 
       return (
         esPendiente && coincidePlataforma && coincideMood && coincideBusqueda
@@ -478,6 +614,10 @@ function App() {
               onChange={(e) => setTitulo(e.target.value)}
             />
 
+            <button type="button" onClick={buscarPeliculasTmdb}>
+              {buscandoTmdb ? "Buscando..." : "Buscar en TMDb"}
+            </button>
+
             <select value={persona} onChange={(e) => setPersona(e.target.value)}>
               {personasCasa.map((nombre) => (
                 <option key={nombre} value={nombre}>
@@ -503,6 +643,27 @@ function App() {
               placeholder="Duración: 1h 45min"
               value={duracion}
               onChange={(e) => setDuracion(e.target.value)}
+            />
+
+            <input
+              type="text"
+              placeholder="Año"
+              value={anio}
+              onChange={(e) => setAnio(e.target.value)}
+            />
+
+            <input
+              type="text"
+              placeholder="Géneros"
+              value={generos}
+              onChange={(e) => setGeneros(e.target.value)}
+            />
+
+            <input
+              type="text"
+              placeholder="Reparto principal"
+              value={reparto}
+              onChange={(e) => setReparto(e.target.value)}
             />
 
             <select value={mood} onChange={(e) => setMood(e.target.value)}>
@@ -534,6 +695,39 @@ function App() {
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
             />
+
+            {errorTmdb && <p className="error-tmdb">{errorTmdb}</p>}
+
+            {resultadosTmdb.length > 0 && (
+              <div className="resultados-tmdb">
+                {resultadosTmdb.slice(0, 6).map((resultado) => (
+                  <button
+                    key={resultado.id}
+                    type="button"
+                    className="resultado-tmdb"
+                    onClick={() => seleccionarPeliculaTmdb(resultado)}
+                  >
+                    {resultado.poster_path ? (
+                      <img
+                        src={`https://image.tmdb.org/t/p/w92${resultado.poster_path}`}
+                        alt={resultado.title}
+                      />
+                    ) : (
+                      <div className="resultado-sin-poster">🎞️</div>
+                    )}
+
+                    <div>
+                      <strong>{resultado.title}</strong>
+                      <span>
+                        {resultado.release_date
+                          ? resultado.release_date.slice(0, 4)
+                          : "Sin año"}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </form>
         )}
       </section>
@@ -541,7 +735,7 @@ function App() {
       <section className="buscador">
         <input
           type="text"
-          placeholder="Buscar por título o descripción..."
+          placeholder="Buscar por título, descripción, género, reparto o año..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
@@ -620,6 +814,8 @@ function App() {
               )}
               {mejorOpcion.duracion && <span>⏱️ {mejorOpcion.duracion}</span>}
               {mejorOpcion.mood && <span>🎭 {mejorOpcion.mood}</span>}
+              {mejorOpcion.anio && <span>📅 {mejorOpcion.anio}</span>}
+              {mejorOpcion.generos && <span>🎬 {mejorOpcion.generos}</span>}
             </div>
 
             {mejorOpcion.descripcion && (
@@ -674,6 +870,7 @@ function App() {
                           <span>⏱️ {pelicula.duracion}</span>
                         )}
                         {pelicula.mood && <span>🎭 {pelicula.mood}</span>}
+                        {pelicula.anio && <span>📅 {pelicula.anio}</span>}
                       </div>
                     </div>
 
@@ -725,6 +922,7 @@ function App() {
               </p>
 
               <h2>{peliculaSeleccionada.titulo}</h2>
+
               <p className="modal-propuesta">
                 Propuesta por: {peliculaSeleccionada.persona}
               </p>
@@ -739,11 +937,23 @@ function App() {
                 {peliculaSeleccionada.mood && (
                   <span>🎭 {peliculaSeleccionada.mood}</span>
                 )}
+                {peliculaSeleccionada.anio && (
+                  <span>📅 {peliculaSeleccionada.anio}</span>
+                )}
+                {peliculaSeleccionada.generos && (
+                  <span>🎬 {peliculaSeleccionada.generos}</span>
+                )}
               </div>
 
               {peliculaSeleccionada.descripcion && (
                 <p className="descripcion modal-descripcion">
                   {peliculaSeleccionada.descripcion}
+                </p>
+              )}
+
+              {peliculaSeleccionada.reparto && (
+                <p className="reparto">
+                  <strong>Reparto:</strong> {peliculaSeleccionada.reparto}
                 </p>
               )}
 
@@ -862,7 +1072,9 @@ function App() {
 
               <div className="acciones acciones-modal">
                 {peliculaSeleccionada.vista ? (
-                  <button onClick={() => marcarPendiente(peliculaSeleccionada.id)}>
+                  <button
+                    onClick={() => marcarPendiente(peliculaSeleccionada.id)}
+                  >
                     Marcar pendiente
                   </button>
                 ) : (
