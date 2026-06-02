@@ -96,14 +96,14 @@ function App() {
   const [buscandoTmdb, setBuscandoTmdb] = useState(false);
   const [errorTmdb, setErrorTmdb] = useState("");
 
-  const [filtro, setFiltro] = useState("pendientes");
+  const [filtro, setFiltro] = useState("todas");
   const [filtroPlataforma, setFiltroPlataforma] = useState("");
   const [filtroMood, setFiltroMood] = useState("");
   const [busqueda, setBusqueda] = useState("");
 
   const [editandoId, setEditandoId] = useState(null);
   const [formularioAbierto, setFormularioAbierto] = useState(false);
-  const [seleccionHoyAbierta, setSeleccionHoyAbierta] = useState(true);
+  const [seleccionHoyAbierta, setSeleccionHoyAbierta] = useState(false);
   const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
   const [peliculaSeleccionadaId, setPeliculaSeleccionadaId] = useState(null);
   const [trailerAbierto, setTrailerAbierto] = useState(false);
