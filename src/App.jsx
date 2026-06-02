@@ -189,6 +189,9 @@ function App() {
       tmdb_id: pelicula.tmdb_id || null,
       tmdb_score: pelicula.tmdb_score ?? null,
       trailer_key: pelicula.trailer_key || "",
+      streaming_mx: Array.isArray(pelicula.streaming_mx)
+        ? pelicula.streaming_mx
+        : [],
       vista: pelicula.vista || false,
     };
   }
@@ -270,6 +273,7 @@ function App() {
       tmdb_id: tmdbId,
       tmdb_score: tmdbScore,
       trailer_key: trailerKey,
+      streaming_mx: streamingMX,
     };
 
     if (editandoId) {
@@ -327,7 +331,7 @@ function App() {
     setTmdbId(pelicula.tmdb_id || null);
     setTmdbScore(pelicula.tmdb_score ?? null);
     setTrailerKey(pelicula.trailer_key || "");
-    setStreamingMX([]);
+    setStreamingMX(pelicula.streaming_mx || []);
 
     window.scrollTo({
       top: 0,
@@ -467,7 +471,14 @@ function App() {
 
       // Mejora 2: Plataformas de streaming disponibles en México
       const flatrateMX = proveedores?.results?.MX?.flatrate || [];
-      setStreamingMX(flatrateMX);
+
+      const streamingMXLimpio = flatrateMX.map((proveedor) => ({
+        provider_id: proveedor.provider_id,
+        provider_name: proveedor.provider_name,
+        logo_path: proveedor.logo_path,
+      }));
+
+      setStreamingMX(streamingMXLimpio);
 
       setTitulo(detalles.title || peliculaTmdb.title || "");
       setDescripcion(detalles.overview || "");
@@ -859,10 +870,14 @@ function App() {
                 <div className="streaming-mx-logos">
                   {streamingMX.map((proveedor) => (
                     <div key={proveedor.provider_id} className="streaming-logo" title={proveedor.provider_name}>
-                      <img
-                        src={`https://image.tmdb.org/t/p/w45${proveedor.logo_path}`}
-                        alt={proveedor.provider_name}
-                      />
+                      {proveedor.logo_path ? (
+                        <img
+                          src={`https://image.tmdb.org/t/p/w45${proveedor.logo_path}`}
+                          alt={proveedor.provider_name}
+                        />
+                      ) : (
+                        <span>📺</span>
+                      )}
                       <span>{proveedor.provider_name}</span>
                     </div>
                   ))}
@@ -1171,6 +1186,35 @@ function App() {
                 <p className="descripcion modal-descripcion">
                   {peliculaSeleccionada.descripcion}
                 </p>
+              )}
+
+              {peliculaSeleccionada.streaming_mx?.length > 0 && (
+                <div className="streaming-guardado">
+                  <p className="streaming-guardado-titulo">
+                    📺 Disponible en streaming:
+                  </p>
+
+                  <div className="streaming-guardado-logos">
+                    {peliculaSeleccionada.streaming_mx.map((proveedor) => (
+                      <div
+                        key={proveedor.provider_id}
+                        className="streaming-guardado-logo"
+                        title={proveedor.provider_name}
+                      >
+                        {proveedor.logo_path ? (
+                          <img
+                            src={`https://image.tmdb.org/t/p/w45${proveedor.logo_path}`}
+                            alt={proveedor.provider_name}
+                          />
+                        ) : (
+                          <span>📺</span>
+                        )}
+
+                        <span>{proveedor.provider_name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
 
               {peliculaSeleccionada.reparto && (

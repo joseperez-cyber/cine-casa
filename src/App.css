@@ -1205,3 +1205,45 @@ button:hover,
 .boton-compartir:hover {
   background: #15803d;
 }
+/* STREAMING GUARDADO EN FICHA */
+
+.streaming-guardado {
+  margin: 14px 0 4px 0;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid var(--linea);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.streaming-guardado-titulo {
+  margin: 0 0 10px 0;
+  color: var(--texto);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.streaming-guardado-logos {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.streaming-guardado-logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(2, 6, 23, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  padding: 6px 10px 6px 6px;
+  color: var(--texto-suave);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.streaming-guardado-logo img {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  object-fit: cover;
+}
