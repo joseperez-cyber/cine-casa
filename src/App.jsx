@@ -57,6 +57,9 @@ function App() {
   const [filtro, setFiltro] = useState("pendientes");
   const [filtroPlataforma, setFiltroPlataforma] = useState("");
   const [filtroMood, setFiltroMood] = useState("");
+  const [busqueda, setBusqueda] = useState("");
+
+  const [editandoId, setEditandoId] = useState(null);
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -134,7 +137,18 @@ function App() {
     lector.readAsDataURL(archivo);
   }
 
-  async function agregarPelicula(evento) {
+  function limpiarFormulario() {
+    setTitulo("");
+    setDescripcion("");
+    setPersona(personasCasa[0]);
+    setPoster("");
+    setPlataforma("");
+    setDuracion("");
+    setMood("");
+    setEditandoId(null);
+  }
+
+  async function guardarPelicula(evento) {
     evento.preventDefault();
 
     if (titulo.trim() === "") {
@@ -142,7 +156,7 @@ function App() {
       return;
     }
 
-    const nuevaPelicula = {
+    const datosPelicula = {
       titulo,
       descripcion,
       persona,
@@ -150,6 +164,27 @@ function App() {
       plataforma,
       duracion,
       mood,
+    };
+
+    if (editandoId) {
+      const { error } = await supabase
+        .from("peliculas")
+        .update(datosPelicula)
+        .eq("id", editandoId);
+
+      if (error) {
+        console.error(error);
+        alert("No se pudo editar la película.");
+        return;
+      }
+
+      limpiarFormulario();
+      cargarPeliculas();
+      return;
+    }
+
+    const nuevaPelicula = {
+      ...datosPelicula,
       opiniones: {},
       calificaciones: {},
       vista: false,
@@ -163,15 +198,24 @@ function App() {
       return;
     }
 
-    setTitulo("");
-    setDescripcion("");
-    setPersona(personasCasa[0]);
-    setPoster("");
-    setPlataforma("");
-    setDuracion("");
-    setMood("");
-
+    limpiarFormulario();
     cargarPeliculas();
+  }
+
+  function empezarEdicion(pelicula) {
+    setEditandoId(pelicula.id);
+    setTitulo(pelicula.titulo || "");
+    setDescripcion(pelicula.descripcion || "");
+    setPersona(pelicula.persona || personasCasa[0]);
+    setPoster(pelicula.poster || "");
+    setPlataforma(pelicula.plataforma || "");
+    setDuracion(pelicula.duracion || "");
+    setMood(pelicula.mood || "");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
   async function agregarOpinion(id, personaQueOpina, opinion) {
@@ -331,7 +375,16 @@ function App() {
 
     const coincideMood = filtroMood === "" || pelicula.mood === filtroMood;
 
-    return coincideEstado && coincidePlataforma && coincideMood;
+    const textoBusqueda = busqueda.toLowerCase().trim();
+
+    const coincideBusqueda =
+      textoBusqueda === "" ||
+      pelicula.titulo.toLowerCase().includes(textoBusqueda) ||
+      pelicula.descripcion.toLowerCase().includes(textoBusqueda);
+
+    return (
+      coincideEstado && coincidePlataforma && coincideMood && coincideBusqueda
+    );
   });
 
   const peliculasOrdenadas = [...peliculasFiltradas].sort((a, b) => {
@@ -353,7 +406,14 @@ function App() {
 
       const coincideMood = filtroMood === "" || pelicula.mood === filtroMood;
 
-      return esPendiente && coincidePlataforma && coincideMood;
+      const textoBusqueda = busqueda.toLowerCase().trim();
+
+      const coincideBusqueda =
+        textoBusqueda === "" ||
+        pelicula.titulo.toLowerCase().includes(textoBusqueda) ||
+        pelicula.descripcion.toLowerCase().includes(textoBusqueda);
+
+      return esPendiente && coincidePlataforma && coincideMood && coincideBusqueda;
     })
     .sort((a, b) => calcularPuntos(b.opiniones) - calcularPuntos(a.opiniones))[0];
 
@@ -364,7 +424,16 @@ function App() {
         <p>Lista familiar para sugerir películas y elegir mejor.</p>
       </header>
 
-      <form className="formulario" onSubmit={agregarPelicula}>
+      <form
+        className={editandoId ? "formulario editando" : "formulario"}
+        onSubmit={guardarPelicula}
+      >
+        {editandoId && (
+          <div className="aviso-edicion">
+            Editando película. Guarda los cambios o cancela la edición.
+          </div>
+        )}
+
         <input
           type="text"
           placeholder="Nombre de la película"
@@ -413,7 +482,15 @@ function App() {
           <input type="file" accept="image/*" onChange={convertirPoster} />
         </label>
 
-        <button type="submit">Agregar</button>
+        <button type="submit">
+          {editandoId ? "Guardar cambios" : "Agregar"}
+        </button>
+
+        {editandoId && (
+          <button type="button" onClick={limpiarFormulario}>
+            Cancelar
+          </button>
+        )}
 
         <textarea
           placeholder="Descripción breve de la película"
@@ -421,6 +498,15 @@ function App() {
           onChange={(e) => setDescripcion(e.target.value)}
         />
       </form>
+
+      <section className="buscador">
+        <input
+          type="text"
+          placeholder="Buscar por título o descripción..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+      </section>
 
       <section className="filtros">
         <button
@@ -474,6 +560,7 @@ function App() {
           onClick={() => {
             setFiltroPlataforma("");
             setFiltroMood("");
+            setBusqueda("");
           }}
         >
           Limpiar filtros
@@ -656,6 +743,10 @@ function App() {
                         Marcar vista
                       </button>
                     )}
+
+                    <button onClick={() => empezarEdicion(pelicula)}>
+                      Editar
+                    </button>
 
                     <button onClick={() => borrarPelicula(pelicula.id)}>
                       Borrar

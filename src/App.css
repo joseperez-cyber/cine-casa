@@ -422,3 +422,28 @@ button:hover,
     font-size: 18px;
   }
 }
+.buscador {
+  margin-bottom: 14px;
+}
+
+.buscador input {
+  width: 100%;
+  background: #f9fafb;
+  color: #111827;
+}
+
+.formulario.editando {
+  border: 1px solid #facc15;
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.2);
+}
+
+.aviso-edicion {
+  grid-column: 1 / -1;
+  background: #312e81;
+  color: #facc15;
+  border: 1px solid #4f46e5;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 14px;
+}
