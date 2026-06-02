@@ -58,6 +58,7 @@ function App() {
   const [generos, setGeneros] = useState("");
   const [reparto, setReparto] = useState("");
   const [tmdbId, setTmdbId] = useState(null);
+  const [trailerKey, setTrailerKey] = useState("");
 
   const [resultadosTmdb, setResultadosTmdb] = useState([]);
   const [buscandoTmdb, setBuscandoTmdb] = useState(false);
@@ -72,6 +73,7 @@ function App() {
   const [formularioAbierto, setFormularioAbierto] = useState(false);
   const [seleccionHoyAbierta, setSeleccionHoyAbierta] = useState(true);
   const [peliculaSeleccionadaId, setPeliculaSeleccionadaId] = useState(null);
+  const [trailerAbierto, setTrailerAbierto] = useState(false);
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -119,6 +121,7 @@ function App() {
       generos: pelicula.generos || "",
       reparto: pelicula.reparto || "",
       tmdb_id: pelicula.tmdb_id || null,
+      trailer_key: pelicula.trailer_key || "",
       vista: pelicula.vista || false,
     };
   }
@@ -169,6 +172,7 @@ function App() {
     setGeneros("");
     setReparto("");
     setTmdbId(null);
+    setTrailerKey("");
     setResultadosTmdb([]);
     setErrorTmdb("");
     setEditandoId(null);
@@ -195,6 +199,7 @@ function App() {
       generos,
       reparto,
       tmdb_id: tmdbId,
+      trailer_key: trailerKey,
     };
 
     if (editandoId) {
@@ -237,6 +242,7 @@ function App() {
     setEditandoId(pelicula.id);
     setFormularioAbierto(true);
     setPeliculaSeleccionadaId(null);
+    setTrailerAbierto(false);
 
     setTitulo(pelicula.titulo || "");
     setDescripcion(pelicula.descripcion || "");
@@ -249,6 +255,7 @@ function App() {
     setGeneros(pelicula.generos || "");
     setReparto(pelicula.reparto || "");
     setTmdbId(pelicula.tmdb_id || null);
+    setTrailerKey(pelicula.trailer_key || "");
 
     window.scrollTo({
       top: 0,
@@ -295,6 +302,31 @@ function App() {
     }
   }
 
+  function encontrarTrailer(videos) {
+    if (!videos || !Array.isArray(videos.results)) return "";
+
+    const videosYoutube = videos.results.filter(
+      (video) => video.site === "YouTube" && video.key
+    );
+
+    const trailerOficial = videosYoutube.find(
+      (video) =>
+        video.type === "Trailer" &&
+        video.official === true &&
+        video.name.toLowerCase().includes("trailer")
+    );
+
+    if (trailerOficial) return trailerOficial.key;
+
+    const trailerNormal = videosYoutube.find((video) => video.type === "Trailer");
+
+    if (trailerNormal) return trailerNormal.key;
+
+    const cualquierVideo = videosYoutube[0];
+
+    return cualquierVideo ? cualquierVideo.key : "";
+  }
+
   async function seleccionarPeliculaTmdb(peliculaTmdb) {
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
 
@@ -307,20 +339,33 @@ function App() {
     setErrorTmdb("");
 
     try {
-      const [respuestaDetalles, respuestaCreditos] = await Promise.all([
-        fetch(
-          `https://api.themoviedb.org/3/movie/${peliculaTmdb.id}?api_key=${apiKey}&language=es-MX`
-        ),
-        fetch(
-          `https://api.themoviedb.org/3/movie/${peliculaTmdb.id}/credits?api_key=${apiKey}&language=es-MX`
-        ),
-      ]);
+      const [respuestaDetalles, respuestaCreditos, respuestaVideos] =
+        await Promise.all([
+          fetch(
+            `https://api.themoviedb.org/3/movie/${peliculaTmdb.id}?api_key=${apiKey}&language=es-MX`
+          ),
+          fetch(
+            `https://api.themoviedb.org/3/movie/${peliculaTmdb.id}/credits?api_key=${apiKey}&language=es-MX`
+          ),
+          fetch(
+            `https://api.themoviedb.org/3/movie/${peliculaTmdb.id}/videos?api_key=${apiKey}&language=es-MX`
+          ),
+        ]);
 
       const detalles = await respuestaDetalles.json();
       const creditos = await respuestaCreditos.json();
+      let videos = await respuestaVideos.json();
 
       if (!respuestaDetalles.ok) {
         throw new Error(detalles.status_message || "Error cargando detalles.");
+      }
+
+      if (!videos.results || videos.results.length === 0) {
+        const respuestaVideosEn = await fetch(
+          `https://api.themoviedb.org/3/movie/${peliculaTmdb.id}/videos?api_key=${apiKey}&language=en-US`
+        );
+
+        videos = await respuestaVideosEn.json();
       }
 
       const posterUrl = detalles.poster_path
@@ -342,6 +387,8 @@ function App() {
             .join(", ")
         : "";
 
+      const trailerEncontrado = encontrarTrailer(videos);
+
       setTitulo(detalles.title || peliculaTmdb.title || "");
       setDescripcion(detalles.overview || "");
       setPoster(posterUrl);
@@ -350,6 +397,7 @@ function App() {
       setGeneros(generosTexto);
       setReparto(repartoTexto);
       setTmdbId(detalles.id);
+      setTrailerKey(trailerEncontrado);
       setResultadosTmdb([]);
     } catch (error) {
       console.error(error);
@@ -509,6 +557,7 @@ function App() {
     }
 
     setPeliculaSeleccionadaId(null);
+    setTrailerAbierto(false);
     setPeliculas(peliculas.filter((pelicula) => pelicula.id !== id));
   }
 
@@ -697,6 +746,12 @@ function App() {
               onChange={(e) => setDescripcion(e.target.value)}
             />
 
+            {trailerKey && (
+              <p className="trailer-detectado">
+                ✅ Tráiler detectado automáticamente
+              </p>
+            )}
+
             {errorTmdb && <p className="error-tmdb">{errorTmdb}</p>}
 
             {resultadosTmdb.length > 0 && (
@@ -834,6 +889,7 @@ function App() {
                   {mejorOpcion.generos && (
                     <span>🎬 {mejorOpcion.generos}</span>
                   )}
+                  {mejorOpcion.trailer_key && <span>▶ Tráiler</span>}
                 </div>
 
                 {mejorOpcion.descripcion && (
@@ -893,6 +949,7 @@ function App() {
                         )}
                         {pelicula.mood && <span>🎭 {pelicula.mood}</span>}
                         {pelicula.anio && <span>📅 {pelicula.anio}</span>}
+                        {pelicula.trailer_key && <span>▶</span>}
                       </div>
                     </div>
 
@@ -914,7 +971,10 @@ function App() {
       {peliculaSeleccionada && (
         <div
           className="modal-fondo"
-          onClick={() => setPeliculaSeleccionadaId(null)}
+          onClick={() => {
+            setPeliculaSeleccionadaId(null);
+            setTrailerAbierto(false);
+          }}
         >
           <section
             className="modal-pelicula"
@@ -922,7 +982,10 @@ function App() {
           >
             <button
               className="cerrar-modal"
-              onClick={() => setPeliculaSeleccionadaId(null)}
+              onClick={() => {
+                setPeliculaSeleccionadaId(null);
+                setTrailerAbierto(false);
+              }}
             >
               ✕
             </button>
@@ -977,6 +1040,15 @@ function App() {
                 <p className="reparto">
                   <strong>Reparto:</strong> {peliculaSeleccionada.reparto}
                 </p>
+              )}
+
+              {peliculaSeleccionada.trailer_key && (
+                <button
+                  className="boton-trailer"
+                  onClick={() => setTrailerAbierto(true)}
+                >
+                  ▶ Ver tráiler
+                </button>
               )}
 
               {!peliculaSeleccionada.vista && (
@@ -1113,6 +1185,31 @@ function App() {
                   Borrar
                 </button>
               </div>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {trailerAbierto && peliculaSeleccionada?.trailer_key && (
+        <div className="modal-trailer-fondo" onClick={() => setTrailerAbierto(false)}>
+          <section
+            className="modal-trailer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="cerrar-modal cerrar-trailer"
+              onClick={() => setTrailerAbierto(false)}
+            >
+              ✕
+            </button>
+
+            <div className="video-trailer">
+              <iframe
+                src={`https://www.youtube.com/embed/${peliculaSeleccionada.trailer_key}?autoplay=1`}
+                title={`Tráiler de ${peliculaSeleccionada.titulo}`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
             </div>
           </section>
         </div>
