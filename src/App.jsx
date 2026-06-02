@@ -55,6 +55,9 @@ function App() {
   const [mood, setMood] = useState("");
 
   const [filtro, setFiltro] = useState("pendientes");
+  const [filtroPlataforma, setFiltroPlataforma] = useState("");
+  const [filtroMood, setFiltroMood] = useState("");
+
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
@@ -316,9 +319,19 @@ function App() {
   }
 
   const peliculasFiltradas = peliculas.filter((pelicula) => {
-    if (filtro === "pendientes") return pelicula.vista === false;
-    if (filtro === "vistas") return pelicula.vista === true;
-    return true;
+    const coincideEstado =
+      filtro === "pendientes"
+        ? pelicula.vista === false
+        : filtro === "vistas"
+        ? pelicula.vista === true
+        : true;
+
+    const coincidePlataforma =
+      filtroPlataforma === "" || pelicula.plataforma === filtroPlataforma;
+
+    const coincideMood = filtroMood === "" || pelicula.mood === filtroMood;
+
+    return coincideEstado && coincidePlataforma && coincideMood;
   });
 
   const peliculasOrdenadas = [...peliculasFiltradas].sort((a, b) => {
@@ -330,6 +343,19 @@ function App() {
 
     return calcularPuntos(b.opiniones) - calcularPuntos(a.opiniones);
   });
+
+  const mejorOpcion = [...peliculas]
+    .filter((pelicula) => {
+      const esPendiente = pelicula.vista === false;
+
+      const coincidePlataforma =
+        filtroPlataforma === "" || pelicula.plataforma === filtroPlataforma;
+
+      const coincideMood = filtroMood === "" || pelicula.mood === filtroMood;
+
+      return esPendiente && coincidePlataforma && coincideMood;
+    })
+    .sort((a, b) => calcularPuntos(b.opiniones) - calcularPuntos(a.opiniones))[0];
 
   return (
     <main className="contenedor">
@@ -418,8 +444,68 @@ function App() {
           Todas
         </button>
 
+        <select
+          className="filtro-select"
+          value={filtroPlataforma}
+          onChange={(e) => setFiltroPlataforma(e.target.value)}
+        >
+          <option value="">Todas las plataformas</option>
+          {plataformas.map((opcion) => (
+            <option key={opcion} value={opcion}>
+              {opcion}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="filtro-select"
+          value={filtroMood}
+          onChange={(e) => setFiltroMood(e.target.value)}
+        >
+          <option value="">Todos los moods</option>
+          {moods.map((opcion) => (
+            <option key={opcion} value={opcion}>
+              {opcion}
+            </option>
+          ))}
+        </select>
+
+        <button
+          onClick={() => {
+            setFiltroPlataforma("");
+            setFiltroMood("");
+          }}
+        >
+          Limpiar filtros
+        </button>
+
         <button onClick={cargarPeliculas}>Actualizar</button>
       </section>
+
+      {mejorOpcion && (
+        <section className="mejor-opcion">
+          <div>
+            <p className="etiqueta-mejor">🏆 Mejor opción para hoy</p>
+            <h2>{mejorOpcion.titulo}</h2>
+
+            <div className="etiquetas">
+              {mejorOpcion.plataforma && (
+                <span>📺 {mejorOpcion.plataforma}</span>
+              )}
+              {mejorOpcion.duracion && <span>⏱️ {mejorOpcion.duracion}</span>}
+              {mejorOpcion.mood && <span>🎭 {mejorOpcion.mood}</span>}
+            </div>
+
+            {mejorOpcion.descripcion && (
+              <p className="descripcion">{mejorOpcion.descripcion}</p>
+            )}
+          </div>
+
+          <div className="puntaje-mejor">
+            {calcularPuntos(mejorOpcion.opiniones)}
+          </div>
+        </section>
+      )}
 
       <section className="lista">
         {cargando ? (
@@ -455,7 +541,9 @@ function App() {
                         {pelicula.plataforma && (
                           <span>📺 {pelicula.plataforma}</span>
                         )}
-                        {pelicula.duracion && <span>⏱️ {pelicula.duracion}</span>}
+                        {pelicula.duracion && (
+                          <span>⏱️ {pelicula.duracion}</span>
+                        )}
                         {pelicula.mood && <span>🎭 {pelicula.mood}</span>}
                       </div>
 
