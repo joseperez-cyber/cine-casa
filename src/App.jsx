@@ -70,6 +70,7 @@ function App() {
 
   const [editandoId, setEditandoId] = useState(null);
   const [formularioAbierto, setFormularioAbierto] = useState(false);
+  const [seleccionHoyAbierta, setSeleccionHoyAbierta] = useState(true);
   const [peliculaSeleccionadaId, setPeliculaSeleccionadaId] = useState(null);
 
   const [cargando, setCargando] = useState(true);
@@ -803,29 +804,50 @@ function App() {
       </section>
 
       {mejorOpcion && (
-        <section className="mejor-opcion">
-          <div>
-            <p className="etiqueta-mejor">🏆 Mejor opción para hoy</p>
-            <h2>{mejorOpcion.titulo}</h2>
+        <section className="panel-seleccion-hoy">
+          <button
+            className="boton-desplegar-seleccion"
+            onClick={() => setSeleccionHoyAbierta(!seleccionHoyAbierta)}
+          >
+            <span>🏆 Mejor opción para hoy</span>
+            <span>{seleccionHoyAbierta ? "▲" : "▼"}</span>
+          </button>
 
-            <div className="etiquetas">
-              {mejorOpcion.plataforma && (
-                <span>📺 {mejorOpcion.plataforma}</span>
-              )}
-              {mejorOpcion.duracion && <span>⏱️ {mejorOpcion.duracion}</span>}
-              {mejorOpcion.mood && <span>🎭 {mejorOpcion.mood}</span>}
-              {mejorOpcion.anio && <span>📅 {mejorOpcion.anio}</span>}
-              {mejorOpcion.generos && <span>🎬 {mejorOpcion.generos}</span>}
+          {seleccionHoyAbierta && (
+            <div
+              className="mejor-opcion"
+              onClick={() => setPeliculaSeleccionadaId(mejorOpcion.id)}
+            >
+              <div>
+                <p className="etiqueta-mejor">Selección recomendada</p>
+                <h2>{mejorOpcion.titulo}</h2>
+
+                <div className="etiquetas">
+                  {mejorOpcion.plataforma && (
+                    <span>📺 {mejorOpcion.plataforma}</span>
+                  )}
+                  {mejorOpcion.duracion && (
+                    <span>⏱️ {mejorOpcion.duracion}</span>
+                  )}
+                  {mejorOpcion.mood && <span>🎭 {mejorOpcion.mood}</span>}
+                  {mejorOpcion.anio && <span>📅 {mejorOpcion.anio}</span>}
+                  {mejorOpcion.generos && (
+                    <span>🎬 {mejorOpcion.generos}</span>
+                  )}
+                </div>
+
+                {mejorOpcion.descripcion && (
+                  <p className="descripcion">{mejorOpcion.descripcion}</p>
+                )}
+
+                <p className="abrir-detalle">Abrir ficha</p>
+              </div>
+
+              <div className="puntaje-mejor">
+                {calcularPuntos(mejorOpcion.opiniones)}
+              </div>
             </div>
-
-            {mejorOpcion.descripcion && (
-              <p className="descripcion">{mejorOpcion.descripcion}</p>
-            )}
-          </div>
-
-          <div className="puntaje-mejor">
-            {calcularPuntos(mejorOpcion.opiniones)}
-          </div>
+          )}
         </section>
       )}
 

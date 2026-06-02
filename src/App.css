@@ -903,3 +903,33 @@ button:hover,
 .reparto strong {
   color: var(--texto);
 }
+/* SELECCIÓN DE HOY DESPLEGABLE */
+
+.panel-seleccion-hoy {
+  margin-bottom: 22px;
+}
+
+.boton-desplegar-seleccion {
+  width: 100%;
+  background: rgba(22, 27, 39, 0.92);
+  color: var(--texto);
+  border: 1px solid rgba(250, 204, 21, 0.28);
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 900;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.boton-desplegar-seleccion:hover {
+  border-color: rgba(250, 204, 21, 0.5);
+  background: rgba(31, 41, 55, 0.92);
+}
+
+.mejor-opcion {
+  cursor: pointer;
+}
