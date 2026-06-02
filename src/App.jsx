@@ -43,6 +43,37 @@ const moods = [
   "Dominguera",
 ];
 
+
+function StarRating({ valor, onChange }) {
+  const calificacionActual = Number(valor || 0);
+
+  return (
+    <div className="estrellas-rating">
+      {[1, 2, 3, 4, 5].map((numero) => (
+        <button
+          key={numero}
+          type="button"
+          className={numero <= calificacionActual ? "estrella activa" : "estrella"}
+          onClick={() => onChange(numero)}
+          aria-label={`${numero} estrellas`}
+        >
+          ★
+        </button>
+      ))}
+
+      {calificacionActual > 0 && (
+        <button
+          type="button"
+          className="limpiar-estrellas"
+          onClick={() => onChange("")}
+        >
+          quitar
+        </button>
+      )}
+    </div>
+  );
+}
+
 function App() {
   const [peliculas, setPeliculas] = useState([]);
 
@@ -58,6 +89,7 @@ function App() {
   const [generos, setGeneros] = useState("");
   const [reparto, setReparto] = useState("");
   const [tmdbId, setTmdbId] = useState(null);
+  const [tmdbScore, setTmdbScore] = useState(null);
   const [trailerKey, setTrailerKey] = useState("");
 
   const [resultadosTmdb, setResultadosTmdb] = useState([]);
@@ -155,6 +187,7 @@ function App() {
       generos: pelicula.generos || "",
       reparto: pelicula.reparto || "",
       tmdb_id: pelicula.tmdb_id || null,
+      tmdb_score: pelicula.tmdb_score ?? null,
       trailer_key: pelicula.trailer_key || "",
       vista: pelicula.vista || false,
     };
@@ -206,6 +239,7 @@ function App() {
     setGeneros("");
     setReparto("");
     setTmdbId(null);
+    setTmdbScore(null);
     setTrailerKey("");
     setResultadosTmdb([]);
     setErrorTmdb("");
@@ -234,6 +268,7 @@ function App() {
       generos,
       reparto,
       tmdb_id: tmdbId,
+      tmdb_score: tmdbScore,
       trailer_key: trailerKey,
     };
 
@@ -290,6 +325,7 @@ function App() {
     setGeneros(pelicula.generos || "");
     setReparto(pelicula.reparto || "");
     setTmdbId(pelicula.tmdb_id || null);
+    setTmdbScore(pelicula.tmdb_score ?? null);
     setTrailerKey(pelicula.trailer_key || "");
     setStreamingMX([]);
 
@@ -441,6 +477,7 @@ function App() {
       setGeneros(generosTexto);
       setReparto(repartoTexto);
       setTmdbId(detalles.id);
+      setTmdbScore(detalles.vote_average ?? null);
       setTrailerKey(trailerEncontrado);
       setResultadosTmdb([]);
     } catch (error) {
@@ -547,6 +584,24 @@ function App() {
 
     const suma = valores.reduce((total, valor) => total + Number(valor), 0);
     return (suma / valores.length).toFixed(1);
+  }
+
+  function obtenerLinkTmdb(pelicula) {
+    if (!pelicula?.tmdb_id) return "";
+    return `https://www.themoviedb.org/movie/${pelicula.tmdb_id}`;
+  }
+
+  function compartirPelicula(pelicula) {
+    const linkTmdb = obtenerLinkTmdb(pelicula);
+    const texto = linkTmdb
+      ? `¿Qué opinan de ver ${pelicula.titulo}? ${linkTmdb}`
+      : `¿Qué opinan de ver ${pelicula.titulo}?`;
+
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(texto)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
   }
 
   async function marcarVista(id) {
@@ -1093,6 +1148,25 @@ function App() {
                 )}
               </div>
 
+              <div className="scores-pelicula">
+                <div>
+                  <span>Casa</span>
+                  <strong>
+                    ⭐ {calcularPromedio(peliculaSeleccionada.calificaciones) || "-"} / 5
+                  </strong>
+                </div>
+
+                {peliculaSeleccionada.tmdb_score !== null &&
+                  peliculaSeleccionada.tmdb_score !== undefined && (
+                    <div>
+                      <span>TMDb</span>
+                      <strong>
+                        ⭐ {Number(peliculaSeleccionada.tmdb_score).toFixed(1)} / 10
+                      </strong>
+                    </div>
+                  )}
+              </div>
+
               {peliculaSeleccionada.descripcion && (
                 <p className="descripcion modal-descripcion">
                   {peliculaSeleccionada.descripcion}
@@ -1105,14 +1179,23 @@ function App() {
                 </p>
               )}
 
-              {peliculaSeleccionada.trailer_key && (
+              <div className="botones-ficha">
+                {peliculaSeleccionada.trailer_key && (
+                  <button
+                    className="boton-trailer"
+                    onClick={() => setTrailerAbierto(true)}
+                  >
+                    ▶ Ver tráiler
+                  </button>
+                )}
+
                 <button
-                  className="boton-trailer"
-                  onClick={() => setTrailerAbierto(true)}
+                  className="boton-compartir"
+                  onClick={() => compartirPelicula(peliculaSeleccionada)}
                 >
-                  ▶ Ver tráiler
+                  📲 Compartir
                 </button>
-              )}
+              </div>
 
               {!peliculaSeleccionada.vista && (
                 <>
@@ -1191,36 +1274,26 @@ function App() {
               {peliculaSeleccionada.vista && (
                 <>
                   <p className="calificacion">
-                    Promedio: ⭐{" "}
-                    {calcularPromedio(peliculaSeleccionada.calificaciones) ||
-                      "-"}{" "}
+                    Promedio de la casa: ⭐{" "}
+                    {calcularPromedio(peliculaSeleccionada.calificaciones) || "-"}{" "}
                     / 5
                   </p>
 
                   <div className="calificaciones-personas">
                     {personasCasa.map((nombre) => (
-                      <div key={nombre} className="calificacion-persona">
+                      <div key={nombre} className="calificacion-persona visual">
                         <span>{nombre}</span>
 
-                        <select
-                          value={
-                            peliculaSeleccionada.calificaciones[nombre] || ""
-                          }
-                          onChange={(e) =>
+                        <StarRating
+                          valor={peliculaSeleccionada.calificaciones[nombre] || ""}
+                          onChange={(valor) =>
                             calificarPelicula(
                               peliculaSeleccionada.id,
                               nombre,
-                              e.target.value
+                              valor
                             )
                           }
-                        >
-                          <option value="">Sin calificar</option>
-                          <option value="1">⭐ 1</option>
-                          <option value="2">⭐⭐ 2</option>
-                          <option value="3">⭐⭐⭐ 3</option>
-                          <option value="4">⭐⭐⭐⭐ 4</option>
-                          <option value="5">⭐⭐⭐⭐⭐ 5</option>
-                        </select>
+                        />
                       </div>
                     ))}
                   </div>

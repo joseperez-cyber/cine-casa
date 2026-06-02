@@ -1103,3 +1103,105 @@ button:hover,
     gap: 7px;
   }
 }
+/* ESTRELLAS VISUALES */
+
+.calificacion-persona.visual {
+  align-items: center;
+  gap: 12px;
+}
+
+.estrellas-rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.estrella {
+  background: transparent;
+  border: none;
+  color: rgba(148, 163, 184, 0.7);
+  font-size: 24px;
+  line-height: 1;
+  padding: 2px;
+  cursor: pointer;
+  transition: transform 0.12s ease, color 0.12s ease;
+}
+
+.estrella:hover {
+  transform: scale(1.12);
+  color: #facc15;
+}
+
+.estrella.activa {
+  color: #facc15;
+}
+
+.limpiar-estrellas {
+  margin-left: 8px;
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--texto-suave);
+  border: 1px solid var(--linea);
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.limpiar-estrellas:hover {
+  color: var(--texto);
+  border-color: rgba(250, 204, 21, 0.35);
+}
+
+/* SCORES CASA / TMDB */
+
+.scores-pelicula {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin: 16px 0 4px 0;
+}
+
+.scores-pelicula div {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--linea);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.scores-pelicula span {
+  display: block;
+  color: var(--texto-suave);
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+.scores-pelicula strong {
+  color: var(--texto);
+  font-size: 16px;
+}
+
+/* BOTONES FICHA */
+
+.botones-ficha {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 16px 0 4px 0;
+}
+
+.botones-ficha .boton-trailer,
+.botones-ficha .boton-compartir {
+  width: 100%;
+  margin: 0;
+}
+
+.boton-compartir {
+  background: #16a34a;
+  color: white;
+}
+
+.boton-compartir:hover {
+  background: #15803d;
+}
