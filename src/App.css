@@ -1501,3 +1501,91 @@ button:hover,
     display: none !important;
   }
 }
+/* FORMULARIO SIMPLE TMDB */
+
+.buscador-tmdb-simple {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+}
+
+.estado-tmdb {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pelicula-seleccionada-preview {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  border-radius: 18px;
+  padding: 12px;
+}
+
+.pelicula-seleccionada-preview img {
+  width: 90px;
+  height: 135px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.preview-label {
+  margin: 0 0 4px 0;
+  color: var(--acento);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pelicula-seleccionada-preview h3 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.preview-descripcion {
+  margin: 10px 0 0 0;
+  color: var(--texto-suave);
+  font-size: 13px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.boton-agregar-tmdb:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 650px) {
+  .pelicula-seleccionada-preview {
+    grid-template-columns: 70px 1fr;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .pelicula-seleccionada-preview img {
+    width: 70px;
+    height: 105px;
+    border-radius: 10px;
+  }
+
+  .pelicula-seleccionada-preview h3 {
+    font-size: 18px;
+  }
+
+  .preview-descripcion {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    font-size: 12px;
+  }
+}
