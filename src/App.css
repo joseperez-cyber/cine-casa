@@ -4370,28 +4370,45 @@ textarea:focus {
   overflow: hidden;
 }
 
-.modal-pelicula::after {
+@media (max-width: 650px) {
+  .modal-pelicula::after {
+    inset: -20px;
+    opacity: 0.34;
+    filter: blur(18px) saturate(1.12);
+  }
+}
+/* ================================================= */
+/* FIX FONDO DINÁMICO DEL MODAL SIN ROMPER CLICS */
+/* ================================================= */
+
+.modal-pelicula {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.modal-pelicula::before {
   content: "";
   position: absolute;
-  inset: -28px;
+  inset: 0;
 
   background-image:
     linear-gradient(
       135deg,
-      rgba(15, 23, 42, 0.96),
-      rgba(15, 23, 42, 0.84)
+      rgba(15, 23, 42, 0.88),
+      rgba(15, 23, 42, 0.96)
     ),
     var(--modal-poster-bg);
 
   background-size: cover;
   background-position: center;
 
-  filter: blur(22px) saturate(1.15);
-  opacity: 0.42;
+  filter: blur(18px) saturate(1.15);
   transform: scale(1.08);
+  opacity: 0.34;
 
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
 }
 
 .modal-pelicula > * {
@@ -4399,10 +4416,24 @@ textarea:focus {
   z-index: 1;
 }
 
+/* Reparamos el handle del modal móvil porque antes usaba ::before */
 @media (max-width: 650px) {
+  .modal-pelicula::before {
+    inset: -16px;
+    opacity: 0.28;
+    filter: blur(16px) saturate(1.1);
+  }
+
   .modal-pelicula::after {
-    inset: -20px;
-    opacity: 0.34;
-    filter: blur(18px) saturate(1.12);
+    content: "";
+    width: 46px;
+    height: 4px;
+    background: rgba(156, 163, 175, 0.55);
+    border-radius: 999px;
+    display: block;
+    margin: 2px auto 8px auto;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
   }
 }
