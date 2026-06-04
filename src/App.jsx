@@ -97,8 +97,9 @@ function App() {
   const [errorTmdb, setErrorTmdb] = useState("");
 
   const [filtro, setFiltro] = useState("todas");
-  const [filtroPlataforma, setFiltroPlataforma] = useState("");
-  const [filtroMood, setFiltroMood] = useState("");
+  const [filtroStreaming, setFiltroStreaming] = useState("");
+  const [filtroGenero, setFiltroGenero] = useState("");
+  const [orden, setOrden] = useState("recientes");
   const [busqueda, setBusqueda] = useState("");
 
   const [editandoId, setEditandoId] = useState(null);
@@ -680,6 +681,30 @@ function App() {
     setPeliculas(peliculas.filter((pelicula) => pelicula.id !== id));
   }
 
+  const generosDisponibles = [
+    ...new Set(
+      peliculas
+        .flatMap((pelicula) =>
+          pelicula.generos
+            ? pelicula.generos.split(",").map((genero) => genero.trim())
+            : []
+        )
+        .filter(Boolean)
+    ),
+  ].sort();
+
+  const streamingDisponible = [
+    ...new Set(
+      peliculas
+        .flatMap((pelicula) =>
+          Array.isArray(pelicula.streaming_mx)
+            ? pelicula.streaming_mx.map((proveedor) => proveedor.provider_name)
+            : []
+        )
+        .filter(Boolean)
+    ),
+  ].sort();
+
   const peliculasFiltradas = peliculas.filter((pelicula) => {
     const coincideEstado =
       filtro === "pendientes"
@@ -688,57 +713,102 @@ function App() {
         ? pelicula.vista === true
         : true;
 
-    const coincidePlataforma =
-      filtroPlataforma === "" || pelicula.plataforma === filtroPlataforma;
+    const coincideStreaming =
+      filtroStreaming === "" ||
+      pelicula.streaming_mx?.some(
+        (proveedor) => proveedor.provider_name === filtroStreaming
+      );
 
-    const coincideMood = filtroMood === "" || pelicula.mood === filtroMood;
+    const coincideGenero =
+      filtroGenero === "" ||
+      pelicula.generos
+        ?.toLowerCase()
+        .split(",")
+        .map((genero) => genero.trim())
+        .includes(filtroGenero.toLowerCase());
 
     const textoBusqueda = busqueda.toLowerCase().trim();
 
     const coincideBusqueda =
       textoBusqueda === "" ||
-      pelicula.titulo.toLowerCase().includes(textoBusqueda) ||
-      pelicula.descripcion.toLowerCase().includes(textoBusqueda) ||
-      pelicula.generos.toLowerCase().includes(textoBusqueda) ||
-      pelicula.reparto.toLowerCase().includes(textoBusqueda) ||
-      pelicula.anio.toLowerCase().includes(textoBusqueda);
+      pelicula.titulo?.toLowerCase().includes(textoBusqueda) ||
+      pelicula.descripcion?.toLowerCase().includes(textoBusqueda) ||
+      pelicula.generos?.toLowerCase().includes(textoBusqueda) ||
+      pelicula.reparto?.toLowerCase().includes(textoBusqueda) ||
+      pelicula.anio?.toLowerCase().includes(textoBusqueda);
 
     return (
-      coincideEstado && coincidePlataforma && coincideMood && coincideBusqueda
+      coincideEstado &&
+      coincideStreaming &&
+      coincideGenero &&
+      coincideBusqueda
     );
   });
 
   const peliculasOrdenadas = [...peliculasFiltradas].sort((a, b) => {
-    if (filtro === "vistas") {
+    if (orden === "recientes") {
+      return new Date(b.created_at) - new Date(a.created_at);
+    }
+
+    if (orden === "titulo") {
+      return (a.titulo || "").localeCompare(b.titulo || "");
+    }
+
+    if (orden === "anio-reciente") {
+      return Number(b.anio || 0) - Number(a.anio || 0);
+    }
+
+    if (orden === "anio-antiguo") {
+      return Number(a.anio || 0) - Number(b.anio || 0);
+    }
+
+    if (orden === "tmdb") {
+      return Number(b.tmdb_score || 0) - Number(a.tmdb_score || 0);
+    }
+
+    if (orden === "casa") {
       const promedioA = Number(calcularPromedio(a.calificaciones) || 0);
       const promedioB = Number(calcularPromedio(b.calificaciones) || 0);
       return promedioB - promedioA;
     }
 
-    return calcularPuntos(b.opiniones) - calcularPuntos(a.opiniones);
+    if (orden === "interes") {
+      return calcularPuntos(b.opiniones) - calcularPuntos(a.opiniones);
+    }
+
+    return 0;
   });
 
   const mejorOpcion = [...peliculas]
     .filter((pelicula) => {
       const esPendiente = pelicula.vista === false;
 
-      const coincidePlataforma =
-        filtroPlataforma === "" || pelicula.plataforma === filtroPlataforma;
+      const coincideStreaming =
+        filtroStreaming === "" ||
+        pelicula.streaming_mx?.some(
+          (proveedor) => proveedor.provider_name === filtroStreaming
+        );
 
-      const coincideMood = filtroMood === "" || pelicula.mood === filtroMood;
+      const coincideGenero =
+        filtroGenero === "" ||
+        pelicula.generos
+          ?.toLowerCase()
+          .split(",")
+          .map((genero) => genero.trim())
+          .includes(filtroGenero.toLowerCase());
 
       const textoBusqueda = busqueda.toLowerCase().trim();
 
       const coincideBusqueda =
         textoBusqueda === "" ||
-        pelicula.titulo.toLowerCase().includes(textoBusqueda) ||
-        pelicula.descripcion.toLowerCase().includes(textoBusqueda) ||
-        pelicula.generos.toLowerCase().includes(textoBusqueda) ||
-        pelicula.reparto.toLowerCase().includes(textoBusqueda) ||
-        pelicula.anio.toLowerCase().includes(textoBusqueda);
+        pelicula.titulo?.toLowerCase().includes(textoBusqueda) ||
+        pelicula.descripcion?.toLowerCase().includes(textoBusqueda) ||
+        pelicula.generos?.toLowerCase().includes(textoBusqueda) ||
+        pelicula.reparto?.toLowerCase().includes(textoBusqueda) ||
+        pelicula.anio?.toLowerCase().includes(textoBusqueda);
 
       return (
-        esPendiente && coincidePlataforma && coincideMood && coincideBusqueda
+        esPendiente && coincideStreaming && coincideGenero && coincideBusqueda
       );
     })
     .sort((a, b) => calcularPuntos(b.opiniones) - calcularPuntos(a.opiniones))[0];
@@ -910,62 +980,78 @@ function App() {
         </section>
 
         <section className="filtros">
-        <button
-          className={filtro === "pendientes" ? "filtro-activo" : ""}
-          onClick={() => setFiltro("pendientes")}
-        >
-          Pendientes
-        </button>
+          <button
+            className={filtro === "pendientes" ? "filtro-activo" : ""}
+            onClick={() => setFiltro("pendientes")}
+          >
+            Pendientes
+          </button>
 
-        <button
-          className={filtro === "vistas" ? "filtro-activo" : ""}
-          onClick={() => setFiltro("vistas")}
-        >
-          Vistas
-        </button>
+          <button
+            className={filtro === "vistas" ? "filtro-activo" : ""}
+            onClick={() => setFiltro("vistas")}
+          >
+            Vistas
+          </button>
 
-        <button
-          className={filtro === "todas" ? "filtro-activo" : ""}
-          onClick={() => setFiltro("todas")}
-        >
-          Todas
-        </button>
+          <button
+            className={filtro === "todas" ? "filtro-activo" : ""}
+            onClick={() => setFiltro("todas")}
+          >
+            Todas
+          </button>
 
-        <select
-          className="filtro-select"
-          value={filtroPlataforma}
-          onChange={(e) => setFiltroPlataforma(e.target.value)}
-        >
-          <option value="">Todas las plataformas</option>
-          {plataformas.map((opcion) => (
-            <option key={opcion} value={opcion}>
-              {opcion}
-            </option>
-          ))}
-        </select>
+          <select
+            className="filtro-select"
+            value={filtroStreaming}
+            onChange={(e) => setFiltroStreaming(e.target.value)}
+          >
+            <option value="">Todas las plataformas</option>
+            {streamingDisponible.map((opcion) => (
+              <option key={opcion} value={opcion}>
+                {opcion}
+              </option>
+            ))}
+          </select>
 
-        <select
-          className="filtro-select"
-          value={filtroMood}
-          onChange={(e) => setFiltroMood(e.target.value)}
-        >
-          <option value="">Todos los moods</option>
-          {moods.map((opcion) => (
-            <option key={opcion} value={opcion}>
-              {opcion}
-            </option>
-          ))}
-        </select>
+          <select
+            className="filtro-select"
+            value={filtroGenero}
+            onChange={(e) => setFiltroGenero(e.target.value)}
+          >
+            <option value="">Todos los géneros</option>
+            {generosDisponibles.map((genero) => (
+              <option key={genero} value={genero}>
+                {genero}
+              </option>
+            ))}
+          </select>
 
-        <button
-          onClick={() => {
-            setFiltroPlataforma("");
-            setFiltroMood("");
-            setBusqueda("");
-          }}
-        >
-          Limpiar filtros
-        </button>
+          <select
+            className="filtro-select"
+            value={orden}
+            onChange={(e) => setOrden(e.target.value)}
+          >
+            <option value="recientes">Más recientes</option>
+            <option value="interes">Más votadas para ver</option>
+            <option value="casa">Mejor calificadas por la casa</option>
+            <option value="tmdb">Mejor score TMDb</option>
+            <option value="anio-reciente">Año más reciente</option>
+            <option value="anio-antiguo">Año más antiguo</option>
+            <option value="titulo">Título A-Z</option>
+          </select>
+
+          <button
+            onClick={() => {
+              setFiltro("todas");
+              setFiltroStreaming("");
+              setFiltroGenero("");
+              setOrden("recientes");
+              setBusqueda("");
+            }}
+          >
+            Limpiar filtros
+          </button>
 
           <button onClick={cargarPeliculas}>Actualizar</button>
         </section>
@@ -1104,6 +1190,11 @@ function App() {
         >
           <section
             className="modal-pelicula"
+            style={{
+              "--modal-poster-bg": peliculaSeleccionada.poster
+                ? `url("${peliculaSeleccionada.poster}")`
+                : "none",
+            }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
