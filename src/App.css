@@ -4361,122 +4361,9 @@ textarea:focus {
 }
 
 /* ================================================= */
-/* FONDO DINÁMICO DEL MODAL CON PÓSTER */
-/* ================================================= */
-
-.modal-pelicula {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-
-@media (max-width: 650px) {
-  .modal-pelicula::after {
-    inset: -20px;
-    opacity: 0.34;
-    filter: blur(18px) saturate(1.12);
-  }
-}
-/* ================================================= */
-/* FIX FONDO DINÁMICO DEL MODAL SIN ROMPER CLICS */
-/* ================================================= */
-
-.modal-pelicula {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-
-.modal-pelicula::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-
-  background-image:
-    linear-gradient(
-      135deg,
-      rgba(15, 23, 42, 0.88),
-      rgba(15, 23, 42, 0.96)
-    ),
-    var(--modal-poster-bg);
-
-  background-size: cover;
-  background-position: center;
-
-  filter: blur(18px) saturate(1.15);
-  transform: scale(1.08);
-  opacity: 0.34;
-
-  pointer-events: none;
-  z-index: 0;
-}
-
-.modal-pelicula > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Reparamos el handle del modal móvil porque antes usaba ::before */
-@media (max-width: 650px) {
-  .modal-pelicula::before {
-    inset: -16px;
-    opacity: 0.28;
-    filter: blur(16px) saturate(1.1);
-  }
-
-  .modal-pelicula::after {
-    content: "";
-    width: 46px;
-    height: 4px;
-    background: rgba(156, 163, 175, 0.55);
-    border-radius: 999px;
-    display: block;
-    margin: 2px auto 8px auto;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 2;
-  }
-}
-/* ================================================= */
 /* FONDO DINÁMICO DIRECTO DEL MODAL */
 /* ================================================= */
 
-.modal-pelicula {
-  background-image:
-    linear-gradient(
-      135deg,
-      rgba(15, 23, 42, 0.88),
-      rgba(15, 23, 42, 0.96)
-    ),
-    var(--modal-poster-bg) !important;
-
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-}
-
-/* Para que el póster no compita demasiado con el contenido */
-.modal-pelicula .modal-contenido,
-.modal-pelicula .modal-poster {
-  position: relative;
-  z-index: 2;
-}
-
-/* En celular lo dejamos un poco más oscuro para que se lea bien */
-@media (max-width: 650px) {
-  .modal-pelicula {
-    background-image:
-      linear-gradient(
-        135deg,
-        rgba(15, 23, 42, 0.9),
-        rgba(15, 23, 42, 0.97)
-      ),
-      var(--modal-poster-bg) !important;
-
-    background-size: cover !important;
-    background-position: center !important;
-  }
-}
 .modal-pelicula {
   background-image:
     linear-gradient(
@@ -4489,7 +4376,33 @@ textarea:focus {
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
 }
+
+.modal-pelicula .modal-contenido,
+.modal-pelicula .modal-poster {
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 650px) {
+  .modal-pelicula {
+    background-image:
+      linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.72),
+        rgba(15, 23, 42, 0.9)
+      ),
+      var(--modal-poster-bg) !important;
+
+    background-size: cover !important;
+    background-position: center !important;
+  }
+}
+
 /* ================================================= */
 /* FIX MODAL / MÓDULOS EN COMPUTADORA */
 /* ================================================= */
@@ -4648,6 +4561,7 @@ textarea:focus {
     }
   }
 }
+
 /* ================================================= */
 /* SKELETON LOADING */
 /* ================================================= */
@@ -4843,7 +4757,6 @@ textarea:focus {
   }
 }
 
-/* En desktop, el efecto de vista se conserva pero más sobrio */
 @media (min-width: 651px) {
   .pelicula.vista {
     border-color: rgba(34, 197, 94, 0.38) !important;
@@ -4851,134 +4764,8 @@ textarea:focus {
       0 18px 45px rgba(0, 0, 0, 0.28),
       0 0 0 1px rgba(34, 197, 94, 0.08) !important;
   }
-} 
-/* ================================================= */
-/* FONDO DINÁMICO DIRECTO DEL MODAL */
-/* ================================================= */
-
-.modal-pelicula {
-  background-image:
-    linear-gradient(
-      135deg,
-      rgba(15, 23, 42, 0.55),
-      rgba(15, 23, 42, 0.78)
-    ),
-    var(--modal-poster-bg) !important;
-
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
 }
 
-.modal-pelicula .modal-contenido,
-.modal-pelicula .modal-poster {
-  position: relative;
-  z-index: 2;
-}
-
-@media (max-width: 650px) {
-  .modal-pelicula {
-    background-image:
-      linear-gradient(
-        135deg,
-        rgba(15, 23, 42, 0.72),
-        rgba(15, 23, 42, 0.9)
-      ),
-      var(--modal-poster-bg) !important;
-
-    background-size: cover !important;
-    background-position: center !important;
-  }
-}
-
-/* ================================================= */
-/* FONDO CON TEXTURA TIPO GRANO DE PELÍCULA */
-/* ================================================= */
-
-html {
-  background: #020617;
-}
-
-body {
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at 20% 0%, rgba(250, 204, 21, 0.13), transparent 28%),
-    radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.16), transparent 32%),
-    radial-gradient(circle at 50% 100%, rgba(34, 197, 94, 0.08), transparent 30%),
-    linear-gradient(135deg, #020617 0%, #0f172a 55%, #111827 100%);
-  position: relative;
-  background-attachment: fixed;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.07;
-  background-image:
-    repeating-radial-gradient(
-      circle at 0 0,
-      rgba(255, 255, 255, 0.9) 0,
-      rgba(255, 255, 255, 0.9) 1px,
-      transparent 1px,
-      transparent 4px
-    );
-}
-
-/* Refuerzo para que la textura no tape modales ni botones */
-#root {
-  position: relative;
-  z-index: 1;
-}
-/* ================================================= */
-/* FONDO FINAL — GRANO DE PELÍCULA VISIBLE */
-/* ================================================= */
-
-html,
-body {
-  min-height: 100%;
-  background: #020617 !important;
-}
-
-body {
-  position: relative !important;
-  overflow-x: hidden;
-
-  background:
-    radial-gradient(circle at 18% 8%, rgba(250, 204, 21, 0.22), transparent 30%),
-    radial-gradient(circle at 82% 12%, rgba(147, 51, 234, 0.28), transparent 34%),
-    radial-gradient(circle at 50% 105%, rgba(34, 197, 94, 0.16), transparent 34%),
-    linear-gradient(135deg, #020617 0%, #0f172a 48%, #030712 100%) !important;
-
-  background-attachment: fixed !important;
-}
-
-/* Capa de grano visible */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-
-  opacity: 0.12;
-
-  background-image:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.55'/%3E%3C/svg%3E");
-}
-
-/* La app queda encima del grano */
-#root {
-  position: relative;
-  z-index: 1;
-}
-
-/* Para que el fondo se alcance a ver entre tarjetas */
-.contenedor {
-  background: transparent !important;
-}
 /* ================================================= */
 /* FONDO GLOBAL CINEMATOGRÁFICO DEFINITIVO */
 /* ================================================= */
@@ -5107,7 +4894,6 @@ body::after {
     color: #facc15;
   }
 
-  /* Ícono agregar: cruz minimalista */
   .icon-add::before,
   .icon-add::after {
     content: "";
@@ -5125,7 +4911,6 @@ body::after {
     transform: translate(-50%, -50%) rotate(90deg);
   }
 
-  /* Ícono filtros: tres líneas limpias */
   .icon-filter::before {
     content: "";
     position: absolute;
@@ -5157,7 +4942,6 @@ body::after {
       -1px 12px 0 1px currentColor;
   }
 
-  /* Ícono mejor: rombo/corona abstracta */
   .icon-best::before {
     content: "";
     position: absolute;
