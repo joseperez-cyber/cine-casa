@@ -2081,3 +2081,187 @@ button:hover,
     border-radius: 13px;
   }
 }
+/* ============================= */
+/* MICROANIMACIONES Y ACCESIBILIDAD */
+/* ============================= */
+
+/* Animación general de tarjetas */
+.pelicula {
+  animation: aparecerTarjeta 0.25s ease both;
+  transform-origin: center;
+}
+
+@keyframes aparecerTarjeta {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Feedback al tocar tarjetas */
+.pelicula:active {
+  transform: scale(0.97);
+  border-color: rgba(250, 204, 21, 0.45);
+}
+
+/* Mejor opción al desplegarse */
+.mejor-opcion {
+  animation: desplegarSuave 0.24s ease both;
+  transform-origin: top center;
+}
+
+@keyframes desplegarSuave {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scaleY(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+/* Formulario al desplegarse */
+.formulario {
+  animation: desplegarSuave 0.24s ease both;
+  transform-origin: top center;
+}
+
+/* Filtros al desplegarse en celular */
+.zona-filtros.abierta {
+  animation: desplegarSuave 0.22s ease both;
+  transform-origin: top center;
+}
+
+/* Modal principal */
+.modal-fondo {
+  animation: aparecerFondo 0.22s ease both;
+}
+
+@keyframes aparecerFondo {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-pelicula {
+  animation: abrirModal 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes abrirModal {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Modal de trailer */
+.modal-trailer {
+  animation: abrirModal 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Resultados TMDb */
+.resultado-tmdb {
+  animation: aparecerResultado 0.2s ease both;
+}
+
+@keyframes aparecerResultado {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Botones desplegables: sensación de botón real */
+.boton-desplegar-formulario,
+.boton-desplegar-seleccion,
+.boton-desplegar-filtros {
+  transition:
+    transform 0.14s ease,
+    border-color 0.14s ease,
+    background 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+.boton-desplegar-formulario:active,
+.boton-desplegar-seleccion:active,
+.boton-desplegar-filtros:active {
+  transform: scale(0.985);
+}
+
+/* Focus visible para accesibilidad */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.pelicula:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+}
+
+/* En celular, el modal se abre como hoja inferior */
+@media (max-width: 650px) {
+  .modal-pelicula {
+    animation: subirHojaMobile 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  @keyframes subirHojaMobile {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .pelicula:active {
+    transform: scale(0.96);
+  }
+
+  .modal-pelicula {
+    scroll-behavior: smooth;
+  }
+
+  .cerrar-modal {
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+  }
+
+  .cerrar-modal:active {
+    transform: scale(0.92);
+  }
+}
+
+/* Respeta usuarios que prefieren menos animación */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
