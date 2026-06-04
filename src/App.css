@@ -2377,3 +2377,252 @@ textarea:focus-visible,
     min-height: 40px !important;
   }
 }
+/* ============================= */
+/* MEJORA VISUAL PREMIUM */
+/* ============================= */
+
+:root {
+  --glass: rgba(22, 27, 39, 0.82);
+  --glass-strong: rgba(22, 27, 39, 0.96);
+  --glow-yellow: rgba(250, 204, 21, 0.18);
+  --glow-blue: rgba(99, 102, 241, 0.16);
+}
+
+/* Fondo más cinematográfico */
+body {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(250, 204, 21, 0.11), transparent 26%),
+    radial-gradient(circle at 80% 10%, rgba(99, 102, 241, 0.18), transparent 32%),
+    radial-gradient(circle at 50% 100%, rgba(34, 197, 94, 0.08), transparent 28%),
+    var(--fondo);
+}
+
+/* Header con más presencia */
+.encabezado {
+  position: relative;
+  padding: 24px 0 10px 0;
+}
+
+.encabezado h1 {
+  background: linear-gradient(135deg, #ffffff, #facc15);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 18px 55px rgba(250, 204, 21, 0.08);
+}
+
+.encabezado p {
+  color: #cbd5e1;
+}
+
+/* Paneles superiores más finos */
+.boton-desplegar-formulario,
+.boton-desplegar-seleccion,
+.boton-desplegar-filtros {
+  background: linear-gradient(135deg, rgba(22, 27, 39, 0.94), rgba(15, 23, 42, 0.94));
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+.boton-desplegar-formulario:hover,
+.boton-desplegar-seleccion:hover,
+.boton-desplegar-filtros:hover {
+  border-color: rgba(250, 204, 21, 0.45);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.3);
+}
+
+/* Tarjetas estilo catálogo */
+.pelicula {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(31, 41, 55, 0.95), rgba(15, 23, 42, 0.96));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.pelicula:hover {
+  border-color: rgba(250, 204, 21, 0.4);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(250, 204, 21, 0.08);
+}
+
+.poster {
+  position: relative;
+  background: #020617;
+}
+
+.poster::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(2, 6, 23, 0.58), transparent 45%);
+  pointer-events: none;
+}
+
+.poster img {
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.pelicula:hover .poster img {
+  transform: scale(1.04);
+  filter: saturate(1.08);
+}
+
+/* Título más limpio */
+.datos-pelicula h2 {
+  font-weight: 850;
+  color: #f8fafc;
+}
+
+.datos-pelicula p {
+  color: #94a3b8;
+}
+
+/* Puntaje más premium */
+.puntaje,
+.puntaje-mejor {
+  background: linear-gradient(135deg, #facc15, #f59e0b);
+  color: #111827;
+  box-shadow:
+    0 8px 22px rgba(250, 204, 21, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Badge vista más elegante */
+.badge-vista {
+  background: rgba(34, 197, 94, 0.16);
+  color: #bbf7d0;
+  border-color: rgba(34, 197, 94, 0.42);
+  box-shadow: 0 6px 18px rgba(34, 197, 94, 0.08);
+}
+
+/* Mejor opción más elegante */
+.mejor-opcion {
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.18), transparent 32%),
+    linear-gradient(135deg, rgba(31, 41, 55, 0.98), rgba(15, 23, 42, 0.98));
+  border: 1px solid rgba(250, 204, 21, 0.35);
+}
+
+.etiqueta-mejor {
+  color: #fde68a !important;
+}
+
+/* Modal más premium */
+.modal-pelicula {
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.08), transparent 30%),
+    linear-gradient(135deg, rgba(22, 27, 39, 0.99), rgba(15, 23, 42, 0.99));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.modal-contenido h2 {
+  color: #f8fafc;
+  font-weight: 900;
+}
+
+.modal-subtitulo {
+  color: #facc15;
+}
+
+.modal-poster {
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(148, 163, 184, 0.12);
+}
+
+/* Etiquetas más limpias */
+.etiquetas span {
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  color: #cbd5e1;
+}
+
+/* Scores más bonitos */
+.scores-pelicula div {
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(30, 41, 59, 0.74));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.scores-pelicula strong {
+  color: #facc15;
+}
+
+/* Botones principales */
+.boton-trailer {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: white;
+}
+
+.boton-compartir {
+  background: linear-gradient(135deg, #22c55e, #15803d);
+  color: white;
+}
+
+.acciones button:first-child {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #052e16;
+}
+
+.acciones button:nth-child(2) {
+  background: rgba(51, 65, 85, 0.88);
+  color: #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.acciones button:last-child {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.28);
+}
+
+/* Resultados TMDb más atractivos */
+.resultado-tmdb {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.84));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.resultado-tmdb:hover {
+  border-color: rgba(250, 204, 21, 0.45);
+  background: rgba(30, 41, 59, 0.95);
+}
+
+/* Preview al agregar */
+.pelicula-seleccionada-preview {
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.08), transparent 35%),
+    rgba(15, 23, 42, 0.82);
+}
+
+/* Estrellas más suaves */
+.estrella {
+  text-shadow: 0 4px 16px rgba(250, 204, 21, 0.12);
+}
+
+.estrella.activa {
+  color: #facc15;
+}
+
+/* Ajuste móvil premium */
+@media (max-width: 650px) {
+  .pelicula {
+    background: rgba(15, 23, 42, 0.96);
+  }
+
+  .poster::after {
+    background: linear-gradient(to top, rgba(2, 6, 23, 0.46), transparent 48%);
+  }
+
+  .datos-pelicula h2 {
+    font-weight: 800;
+  }
+
+  .modal-pelicula {
+    box-shadow: 0 -24px 70px rgba(0, 0, 0, 0.65);
+  }
+
+  .modal-poster {
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.32);
+  }
+}
