@@ -112,6 +112,7 @@ function App() {
   const [error, setError] = useState("");
   const [streamingMX, setStreamingMX] = useState([]);
   const [peliculasSimilares, setPeliculasSimilares] = useState([]);
+  const [toast, setToast] = useState("");
 
   const peliculaSeleccionada = peliculas.find(
     (pelicula) => pelicula.id === peliculaSeleccionadaId
@@ -167,6 +168,14 @@ function App() {
     }, 400);
     return () => clearTimeout(timer);
   }, [titulo]);
+
+  function mostrarToast(mensaje) {
+    setToast(mensaje);
+
+    setTimeout(() => {
+      setToast("");
+    }, 1800);
+  }
 
   function normalizarPelicula(pelicula) {
     return {
@@ -289,6 +298,7 @@ function App() {
         return;
       }
 
+      mostrarToast("✅ Película actualizada");
       limpiarFormulario();
       cargarPeliculas();
       return;
@@ -309,6 +319,7 @@ function App() {
       return;
     }
 
+    mostrarToast("✅ Película agregada");
     limpiarFormulario();
     cargarPeliculas();
   }
@@ -563,6 +574,8 @@ function App() {
           : pelicula
       )
     );
+
+    mostrarToast("⭐ Calificación guardada");
   }
 
   function obtenerClaseOpinion(opinion) {
@@ -641,6 +654,8 @@ function App() {
         pelicula.id === id ? { ...pelicula, vista: true } : pelicula
       )
     );
+
+    mostrarToast("✅ Marcada como vista");
   }
 
   async function marcarPendiente(id) {
@@ -660,6 +675,8 @@ function App() {
         pelicula.id === id ? { ...pelicula, vista: false } : pelicula
       )
     );
+
+    mostrarToast("↩️ Marcada como pendiente");
   }
 
   async function borrarPelicula(id) {
@@ -678,6 +695,7 @@ function App() {
     setPeliculaSeleccionadaId(null);
     setTrailerAbierto(false);
     setPeliculas(peliculas.filter((pelicula) => pelicula.id !== id));
+    mostrarToast("🗑 Película eliminada");
   }
 
   const peliculasFiltradas = peliculas.filter((pelicula) => {
@@ -983,7 +1001,12 @@ function App() {
 
           {seleccionHoyAbierta && (
             <div
-              className="mejor-opcion"
+              className="mejor-opcion hero-mejor-opcion"
+              style={{
+                "--hero-poster": mejorOpcion.poster
+                  ? `url(${mejorOpcion.poster})`
+                  : "none",
+              }}
               onClick={() => setPeliculaSeleccionadaId(mejorOpcion.id)}
             >
               <div>
@@ -1091,6 +1114,11 @@ function App() {
         >
           <section
             className="modal-pelicula"
+            style={{
+              "--modal-poster-bg": peliculaSeleccionada.poster
+                ? `url(${peliculaSeleccionada.poster})`
+                : "none",
+            }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -1401,6 +1429,7 @@ function App() {
       <nav className="barra-mobile">
         <button
           type="button"
+          className={formularioAbierto ? "activo" : ""}
           onClick={() => {
             setFormularioAbierto(true);
             setFiltrosAbiertos(false);
@@ -1418,6 +1447,7 @@ function App() {
 
         <button
           type="button"
+          className={filtrosAbiertos ? "activo" : ""}
           onClick={() => {
             setFiltrosAbiertos(!filtrosAbiertos);
             setFormularioAbierto(false);
@@ -1435,6 +1465,7 @@ function App() {
 
         <button
           type="button"
+          className={seleccionHoyAbierta ? "activo" : ""}
           onClick={() => {
             setSeleccionHoyAbierta(!seleccionHoyAbierta);
             setFormularioAbierto(false);
@@ -1450,6 +1481,8 @@ function App() {
           <small>Mejor</small>
         </button>
       </nav>
+
+      {toast && <div className="toast-app">{toast}</div>}
 
       {trailerAbierto && peliculaSeleccionada?.trailer_key && (
         <div className="modal-trailer-fondo" onClick={() => setTrailerAbierto(false)}>

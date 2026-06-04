@@ -4207,3 +4207,202 @@ textarea:focus {
     justify-content: center;
   }
 }
+/* ================================================= */
+/* BARRA MÓVIL ACTIVA */
+/* ================================================= */
+
+@media (max-width: 650px) {
+  .barra-mobile button.activo {
+    background:
+      radial-gradient(circle at top, rgba(250, 204, 21, 0.22), transparent 38%),
+      rgba(250, 204, 21, 0.14);
+    border-color: rgba(250, 204, 21, 0.55);
+    box-shadow:
+      0 8px 24px rgba(250, 204, 21, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .barra-mobile button.activo span {
+    color: #facc15;
+    transform: translateY(-1px);
+  }
+
+  .barra-mobile button.activo small {
+    color: #facc15;
+  }
+}
+
+/* ================================================= */
+/* TOASTS DE CONFIRMACIÓN */
+/* ================================================= */
+
+.toast-app {
+  position: fixed;
+  left: 50%;
+  bottom: 92px;
+  transform: translateX(-50%);
+  z-index: 12000;
+
+  width: fit-content;
+  max-width: min(90vw, 380px);
+
+  background:
+    radial-gradient(circle at top left, rgba(250, 204, 21, 0.13), transparent 38%),
+    rgba(15, 23, 42, 0.96);
+
+  color: #f8fafc;
+  border: 1px solid rgba(250, 204, 21, 0.28);
+  border-radius: 999px;
+
+  padding: 11px 16px;
+
+  font-size: 13px;
+  font-weight: 900;
+  text-align: center;
+
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  animation: toastEntrada 0.22s ease both;
+}
+
+@keyframes toastEntrada {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 651px) {
+  .toast-app {
+    bottom: 32px;
+  }
+}
+
+/* ================================================= */
+/* HERO CINEMATOGRÁFICO PARA MEJOR OPCIÓN */
+/* ================================================= */
+
+.hero-mejor-opcion {
+  position: relative;
+  overflow: hidden;
+  min-height: 190px;
+  align-items: flex-end;
+  isolation: isolate;
+}
+
+.hero-mejor-opcion::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(15, 23, 42, 0.96) 0%,
+      rgba(15, 23, 42, 0.78) 45%,
+      rgba(15, 23, 42, 0.4) 100%
+    ),
+    var(--hero-poster);
+
+  background-size: cover;
+  background-position: center;
+  filter: saturate(1.15);
+  z-index: -2;
+}
+
+.hero-mejor-opcion::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.18), transparent 35%),
+    linear-gradient(to top, rgba(2, 6, 23, 0.45), transparent 45%);
+
+  z-index: -1;
+}
+
+.hero-mejor-opcion h2 {
+  text-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+}
+
+.hero-mejor-opcion .descripcion {
+  max-width: 720px;
+}
+
+@media (max-width: 650px) {
+  .hero-mejor-opcion {
+    min-height: 145px;
+    padding: 16px;
+  }
+
+  .hero-mejor-opcion::before {
+    background-image:
+      linear-gradient(
+        90deg,
+        rgba(15, 23, 42, 0.96) 0%,
+        rgba(15, 23, 42, 0.74) 62%,
+        rgba(15, 23, 42, 0.5) 100%
+      ),
+      var(--hero-poster);
+  }
+
+  .hero-mejor-opcion h2 {
+    font-size: 23px;
+  }
+}
+
+/* ================================================= */
+/* FONDO DINÁMICO DEL MODAL CON PÓSTER */
+/* ================================================= */
+
+.modal-pelicula {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.modal-pelicula::after {
+  content: "";
+  position: absolute;
+  inset: -28px;
+
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.96),
+      rgba(15, 23, 42, 0.84)
+    ),
+    var(--modal-poster-bg);
+
+  background-size: cover;
+  background-position: center;
+
+  filter: blur(22px) saturate(1.15);
+  opacity: 0.42;
+  transform: scale(1.08);
+
+  pointer-events: none;
+  z-index: -1;
+}
+
+.modal-pelicula > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 650px) {
+  .modal-pelicula::after {
+    inset: -20px;
+    opacity: 0.34;
+    filter: blur(18px) saturate(1.12);
+  }
+}
