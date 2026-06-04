@@ -1460,6 +1460,7 @@ function App() {
       <nav className="barra-mobile">
         <button
           type="button"
+          className={formularioAbierto ? "activo" : ""}
           onClick={() => {
             setFormularioAbierto(true);
             setFiltrosAbiertos(false);
@@ -1471,12 +1472,13 @@ function App() {
             });
           }}
         >
-          <span>＋</span>
+          <span className="nav-icon icon-add" aria-hidden="true"></span>
           <small>Agregar</small>
         </button>
 
         <button
           type="button"
+          className={filtrosAbiertos ? "activo" : ""}
           onClick={() => {
             setFiltrosAbiertos(!filtrosAbiertos);
             setFormularioAbierto(false);
@@ -1488,12 +1490,13 @@ function App() {
             });
           }}
         >
-          <span>🔎</span>
+          <span className="nav-icon icon-filter" aria-hidden="true"></span>
           <small>Filtros</small>
         </button>
 
         <button
           type="button"
+          className={seleccionHoyAbierta ? "activo" : ""}
           onClick={() => {
             setSeleccionHoyAbierta(!seleccionHoyAbierta);
             setFormularioAbierto(false);
@@ -1505,7 +1508,7 @@ function App() {
             });
           }}
         >
-          <span>🏆</span>
+          <span className="nav-icon icon-best" aria-hidden="true"></span>
           <small>Mejor</small>
         </button>
       </nav>

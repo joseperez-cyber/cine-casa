@@ -4889,6 +4889,7 @@ textarea:focus {
     background-size: cover !important;
     background-position: center !important;
   }
+}
 
 /* ================================================= */
 /* FONDO CON TEXTURA TIPO GRANO DE PELÍCULA */
@@ -4977,4 +4978,207 @@ body::before {
 /* Para que el fondo se alcance a ver entre tarjetas */
 .contenedor {
   background: transparent !important;
+}
+/* ================================================= */
+/* FONDO GLOBAL CINEMATOGRÁFICO DEFINITIVO */
+/* ================================================= */
+
+html,
+body {
+  min-height: 100%;
+  background: #020617 !important;
+}
+
+body {
+  position: relative !important;
+  overflow-x: hidden !important;
+}
+
+/* Capa principal de color */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at 15% 8%, rgba(250, 204, 21, 0.22), transparent 28%),
+    radial-gradient(circle at 85% 12%, rgba(147, 51, 234, 0.24), transparent 32%),
+    radial-gradient(circle at 50% 105%, rgba(34, 197, 94, 0.13), transparent 34%),
+    radial-gradient(circle at 12% 82%, rgba(59, 130, 246, 0.12), transparent 28%),
+    linear-gradient(135deg, #020617 0%, #0f172a 48%, #030712 100%) !important;
+}
+
+/* Grano de película */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.65'/%3E%3C/svg%3E");
+}
+
+/* Todo el contenido queda encima del fondo */
+#root {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+
+.contenedor {
+  background: transparent !important;
+}
+
+/* Para que el fondo se note más entre módulos */
+.pelicula,
+.formulario,
+.filtros,
+.mejor-opcion,
+.boton-desplegar-formulario,
+.boton-desplegar-filtros,
+.boton-desplegar-seleccion {
+  backdrop-filter: blur(12px);
+}
+
+/* ================================================= */
+/* BARRA MÓVIL MINIMALISTA */
+/* ================================================= */
+
+@media (max-width: 650px) {
+  .barra-mobile {
+    background:
+      linear-gradient(135deg, rgba(15, 23, 42, 0.86), rgba(2, 6, 23, 0.88)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.18) !important;
+    border-radius: 26px !important;
+    box-shadow:
+      0 18px 48px rgba(0, 0, 0, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(18px) !important;
+  }
+
+  .barra-mobile button {
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    color: #94a3b8 !important;
+    box-shadow: none !important;
+    gap: 5px !important;
+  }
+
+  .barra-mobile button:hover {
+    border-color: rgba(148, 163, 184, 0.16) !important;
+    background: rgba(148, 163, 184, 0.06) !important;
+  }
+
+  .barra-mobile button.activo {
+    background: rgba(250, 204, 21, 0.09) !important;
+    border-color: rgba(250, 204, 21, 0.32) !important;
+    box-shadow:
+      0 8px 22px rgba(250, 204, 21, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .barra-mobile button small {
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    color: #94a3b8 !important;
+    letter-spacing: 0.01em;
+  }
+
+  .barra-mobile button.activo small {
+    color: #facc15 !important;
+  }
+
+  .nav-icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: relative;
+    color: #94a3b8;
+  }
+
+  .barra-mobile button.activo .nav-icon {
+    color: #facc15;
+  }
+
+  /* Ícono agregar: cruz minimalista */
+  .icon-add::before,
+  .icon-add::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 15px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 999px;
+    transform: translate(-50%, -50%);
+  }
+
+  .icon-add::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  /* Ícono filtros: tres líneas limpias */
+  .icon-filter::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 4px;
+    width: 16px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 999px;
+    box-shadow:
+      0 6px 0 currentColor,
+      0 12px 0 currentColor;
+  }
+
+  .icon-filter::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 4px;
+    background: #020617;
+    border: 2px solid currentColor;
+    border-radius: 999px;
+    box-shadow:
+      7px 6px 0 -1px #020617,
+      7px 6px 0 1px currentColor,
+      -1px 12px 0 -1px #020617,
+      -1px 12px 0 1px currentColor;
+  }
+
+  /* Ícono mejor: rombo/corona abstracta */
+  .icon-best::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 51%;
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-radius: 4px;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .icon-best::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 51%;
+    width: 5px;
+    height: 5px;
+    background: currentColor;
+    border-radius: 999px;
+    transform: translate(-50%, -50%);
+  }
 }
