@@ -1168,9 +1168,14 @@ function App() {
           }}
         >
           <section
-            className="modal-pelicula"
-            onClick={(e) => e.stopPropagation()}
-          >
+  className="modal-pelicula"
+  style={{
+    "--modal-poster-bg": peliculaSeleccionada.poster
+      ? `url("${peliculaSeleccionada.poster}")`
+      : "none",
+  }}
+  onClick={(e) => e.stopPropagation()}
+>
             <button
               className="cerrar-modal"
               onClick={() => {
