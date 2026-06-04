@@ -97,8 +97,9 @@ function App() {
   const [errorTmdb, setErrorTmdb] = useState("");
 
   const [filtro, setFiltro] = useState("todas");
-  const [filtroPlataforma, setFiltroPlataforma] = useState("");
-  const [filtroMood, setFiltroMood] = useState("");
+  const [filtroStreaming, setFiltroStreaming] = useState("");
+  const [filtroGenero, setFiltroGenero] = useState("");
+  const [orden, setOrden] = useState("recientes");
   const [busqueda, setBusqueda] = useState("");
 
   const [editandoId, setEditandoId] = useState(null);
@@ -112,7 +113,6 @@ function App() {
   const [error, setError] = useState("");
   const [streamingMX, setStreamingMX] = useState([]);
   const [peliculasSimilares, setPeliculasSimilares] = useState([]);
-  const [toast, setToast] = useState("");
 
   const peliculaSeleccionada = peliculas.find(
     (pelicula) => pelicula.id === peliculaSeleccionadaId
@@ -168,14 +168,6 @@ function App() {
     }, 400);
     return () => clearTimeout(timer);
   }, [titulo]);
-
-  function mostrarToast(mensaje) {
-    setToast(mensaje);
-
-    setTimeout(() => {
-      setToast("");
-    }, 1800);
-  }
 
   function normalizarPelicula(pelicula) {
     return {
@@ -298,7 +290,6 @@ function App() {
         return;
       }
 
-      mostrarToast("✅ Película actualizada");
       limpiarFormulario();
       cargarPeliculas();
       return;
@@ -319,7 +310,6 @@ function App() {
       return;
     }
 
-    mostrarToast("✅ Película agregada");
     limpiarFormulario();
     cargarPeliculas();
   }
@@ -574,8 +564,6 @@ function App() {
           : pelicula
       )
     );
-
-    mostrarToast("⭐ Calificación guardada");
   }
 
   function obtenerClaseOpinion(opinion) {
@@ -583,14 +571,6 @@ function App() {
     if (opinion === "La quiero ver") return "opinion-quiere";
     if (opinion === "Puede que sí") return "opinion-puede";
     if (opinion === "No la quiero ver") return "opinion-no";
-    return "";
-  }
-
-  function obtenerEmojiOpinion(opinion) {
-    if (opinion === "Me urge verla") return "🔥";
-    if (opinion === "La quiero ver") return "✅";
-    if (opinion === "Puede que sí") return "🤔";
-    if (opinion === "No la quiero ver") return "❌";
     return "";
   }
 
@@ -654,8 +634,6 @@ function App() {
         pelicula.id === id ? { ...pelicula, vista: true } : pelicula
       )
     );
-
-    mostrarToast("✅ Marcada como vista");
   }
 
   async function marcarPendiente(id) {
@@ -675,8 +653,6 @@ function App() {
         pelicula.id === id ? { ...pelicula, vista: false } : pelicula
       )
     );
-
-    mostrarToast("↩️ Marcada como pendiente");
   }
 
   async function borrarPelicula(id) {
@@ -695,8 +671,31 @@ function App() {
     setPeliculaSeleccionadaId(null);
     setTrailerAbierto(false);
     setPeliculas(peliculas.filter((pelicula) => pelicula.id !== id));
-    mostrarToast("🗑 Película eliminada");
   }
+
+  const generosDisponibles = [
+    ...new Set(
+      peliculas
+        .flatMap((pelicula) =>
+          pelicula.generos
+            ? pelicula.generos.split(",").map((genero) => genero.trim())
+            : []
+        )
+        .filter(Boolean)
+    ),
+  ].sort();
+
+  const streamingDisponible = [
+    ...new Set(
+      peliculas
+        .flatMap((pelicula) =>
+          Array.isArray(pelicula.streaming_mx)
+            ? pelicula.streaming_mx.map((proveedor) => proveedor.provider_name)
+            : []
+        )
+        .filter(Boolean)
+    ),
+  ].sort();
 
   const peliculasFiltradas = peliculas.filter((pelicula) => {
     const coincideEstado =
@@ -706,57 +705,102 @@ function App() {
         ? pelicula.vista === true
         : true;
 
-    const coincidePlataforma =
-      filtroPlataforma === "" || pelicula.plataforma === filtroPlataforma;
+    const coincideStreaming =
+      filtroStreaming === "" ||
+      pelicula.streaming_mx?.some(
+        (proveedor) => proveedor.provider_name === filtroStreaming
+      );
 
-    const coincideMood = filtroMood === "" || pelicula.mood === filtroMood;
+    const coincideGenero =
+      filtroGenero === "" ||
+      pelicula.generos
+        ?.toLowerCase()
+        .split(",")
+        .map((genero) => genero.trim())
+        .includes(filtroGenero.toLowerCase());
 
     const textoBusqueda = busqueda.toLowerCase().trim();
 
     const coincideBusqueda =
       textoBusqueda === "" ||
-      pelicula.titulo.toLowerCase().includes(textoBusqueda) ||
-      pelicula.descripcion.toLowerCase().includes(textoBusqueda) ||
-      pelicula.generos.toLowerCase().includes(textoBusqueda) ||
-      pelicula.reparto.toLowerCase().includes(textoBusqueda) ||
-      pelicula.anio.toLowerCase().includes(textoBusqueda);
+      pelicula.titulo?.toLowerCase().includes(textoBusqueda) ||
+      pelicula.descripcion?.toLowerCase().includes(textoBusqueda) ||
+      pelicula.generos?.toLowerCase().includes(textoBusqueda) ||
+      pelicula.reparto?.toLowerCase().includes(textoBusqueda) ||
+      pelicula.anio?.toLowerCase().includes(textoBusqueda);
 
     return (
-      coincideEstado && coincidePlataforma && coincideMood && coincideBusqueda
+      coincideEstado &&
+      coincideStreaming &&
+      coincideGenero &&
+      coincideBusqueda
     );
   });
 
   const peliculasOrdenadas = [...peliculasFiltradas].sort((a, b) => {
-    if (filtro === "vistas") {
+    if (orden === "recientes") {
+      return new Date(b.created_at) - new Date(a.created_at);
+    }
+
+    if (orden === "titulo") {
+      return (a.titulo || "").localeCompare(b.titulo || "");
+    }
+
+    if (orden === "anio-reciente") {
+      return Number(b.anio || 0) - Number(a.anio || 0);
+    }
+
+    if (orden === "anio-antiguo") {
+      return Number(a.anio || 0) - Number(b.anio || 0);
+    }
+
+    if (orden === "tmdb") {
+      return Number(b.tmdb_score || 0) - Number(a.tmdb_score || 0);
+    }
+
+    if (orden === "casa") {
       const promedioA = Number(calcularPromedio(a.calificaciones) || 0);
       const promedioB = Number(calcularPromedio(b.calificaciones) || 0);
       return promedioB - promedioA;
     }
 
-    return calcularPuntos(b.opiniones) - calcularPuntos(a.opiniones);
+    if (orden === "interes") {
+      return calcularPuntos(b.opiniones) - calcularPuntos(a.opiniones);
+    }
+
+    return 0;
   });
 
   const mejorOpcion = [...peliculas]
     .filter((pelicula) => {
       const esPendiente = pelicula.vista === false;
 
-      const coincidePlataforma =
-        filtroPlataforma === "" || pelicula.plataforma === filtroPlataforma;
+      const coincideStreaming =
+        filtroStreaming === "" ||
+        pelicula.streaming_mx?.some(
+          (proveedor) => proveedor.provider_name === filtroStreaming
+        );
 
-      const coincideMood = filtroMood === "" || pelicula.mood === filtroMood;
+      const coincideGenero =
+        filtroGenero === "" ||
+        pelicula.generos
+          ?.toLowerCase()
+          .split(",")
+          .map((genero) => genero.trim())
+          .includes(filtroGenero.toLowerCase());
 
       const textoBusqueda = busqueda.toLowerCase().trim();
 
       const coincideBusqueda =
         textoBusqueda === "" ||
-        pelicula.titulo.toLowerCase().includes(textoBusqueda) ||
-        pelicula.descripcion.toLowerCase().includes(textoBusqueda) ||
-        pelicula.generos.toLowerCase().includes(textoBusqueda) ||
-        pelicula.reparto.toLowerCase().includes(textoBusqueda) ||
-        pelicula.anio.toLowerCase().includes(textoBusqueda);
+        pelicula.titulo?.toLowerCase().includes(textoBusqueda) ||
+        pelicula.descripcion?.toLowerCase().includes(textoBusqueda) ||
+        pelicula.generos?.toLowerCase().includes(textoBusqueda) ||
+        pelicula.reparto?.toLowerCase().includes(textoBusqueda) ||
+        pelicula.anio?.toLowerCase().includes(textoBusqueda);
 
       return (
-        esPendiente && coincidePlataforma && coincideMood && coincideBusqueda
+        esPendiente && coincideStreaming && coincideGenero && coincideBusqueda
       );
     })
     .sort((a, b) => calcularPuntos(b.opiniones) - calcularPuntos(a.opiniones))[0];
@@ -951,11 +995,11 @@ function App() {
 
         <select
           className="filtro-select"
-          value={filtroPlataforma}
-          onChange={(e) => setFiltroPlataforma(e.target.value)}
+          value={filtroStreaming}
+          onChange={(e) => setFiltroStreaming(e.target.value)}
         >
           <option value="">Todas las plataformas</option>
-          {plataformas.map((opcion) => (
+          {streamingDisponible.map((opcion) => (
             <option key={opcion} value={opcion}>
               {opcion}
             </option>
@@ -964,21 +1008,37 @@ function App() {
 
         <select
           className="filtro-select"
-          value={filtroMood}
-          onChange={(e) => setFiltroMood(e.target.value)}
+          value={filtroGenero}
+          onChange={(e) => setFiltroGenero(e.target.value)}
         >
-          <option value="">Todos los moods</option>
-          {moods.map((opcion) => (
-            <option key={opcion} value={opcion}>
-              {opcion}
+          <option value="">Todos los géneros</option>
+          {generosDisponibles.map((genero) => (
+            <option key={genero} value={genero}>
+              {genero}
             </option>
           ))}
         </select>
 
+        <select
+          className="filtro-select"
+          value={orden}
+          onChange={(e) => setOrden(e.target.value)}
+        >
+          <option value="recientes">Más recientes</option>
+          <option value="interes">Más votadas para ver</option>
+          <option value="casa">Mejor calificadas por la casa</option>
+          <option value="tmdb">Mejor score TMDb</option>
+          <option value="anio-reciente">Año más reciente</option>
+          <option value="anio-antiguo">Año más antiguo</option>
+          <option value="titulo">Título A-Z</option>
+        </select>
+
         <button
           onClick={() => {
-            setFiltroPlataforma("");
-            setFiltroMood("");
+            setFiltro("todas");
+            setFiltroStreaming("");
+            setFiltroGenero("");
+            setOrden("recientes");
             setBusqueda("");
           }}
         >
@@ -1001,12 +1061,7 @@ function App() {
 
           {seleccionHoyAbierta && (
             <div
-              className="mejor-opcion hero-mejor-opcion"
-              style={{
-                "--hero-poster": mejorOpcion.poster
-                  ? `url(${mejorOpcion.poster})`
-                  : "none",
-              }}
+              className="mejor-opcion"
               onClick={() => setPeliculaSeleccionadaId(mejorOpcion.id)}
             >
               <div>
@@ -1045,15 +1100,7 @@ function App() {
 
       <section className="lista">
         {cargando ? (
-          <div className="skeleton-grid">
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <div key={item} className="skeleton-card">
-                <div className="skeleton-poster"></div>
-                <div className="skeleton-line"></div>
-                <div className="skeleton-line small"></div>
-              </div>
-            ))}
-          </div>
+          <p className="vacio">Cargando películas...</p>
         ) : error ? (
           <p className="vacio">{error}</p>
         ) : peliculasOrdenadas.length === 0 ? (
@@ -1122,11 +1169,6 @@ function App() {
         >
           <section
             className="modal-pelicula"
-            style={{
-              "--modal-poster-bg": peliculaSeleccionada.poster
-                ? `url(${peliculaSeleccionada.poster})`
-                : "none",
-            }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -1199,53 +1241,44 @@ function App() {
               </div>
 
               {peliculaSeleccionada.descripcion && (
-                <section className="bloque-modal">
-                  <h3>Sinopsis</h3>
-                  <p className="descripcion modal-descripcion">
-                    {peliculaSeleccionada.descripcion}
-                  </p>
-                </section>
+                <p className="descripcion modal-descripcion">
+                  {peliculaSeleccionada.descripcion}
+                </p>
               )}
 
               {peliculaSeleccionada.streaming_mx?.length > 0 && (
-                <section className="bloque-modal">
-                  <h3>Dónde verla</h3>
-                  <div className="streaming-guardado">
-                    <p className="streaming-guardado-titulo">
-                      📺 Disponible en streaming:
-                    </p>
+                <div className="streaming-guardado">
+                  <p className="streaming-guardado-titulo">
+                    📺 Disponible en streaming:
+                  </p>
 
-                    <div className="streaming-guardado-logos">
-                      {peliculaSeleccionada.streaming_mx.map((proveedor) => (
-                        <div
-                          key={proveedor.provider_id}
-                          className="streaming-guardado-logo"
-                          title={proveedor.provider_name}
-                        >
-                          {proveedor.logo_path ? (
-                            <img
-                              src={`https://image.tmdb.org/t/p/w45${proveedor.logo_path}`}
-                              alt={proveedor.provider_name}
-                            />
-                          ) : (
-                            <span>📺</span>
-                          )}
+                  <div className="streaming-guardado-logos">
+                    {peliculaSeleccionada.streaming_mx.map((proveedor) => (
+                      <div
+                        key={proveedor.provider_id}
+                        className="streaming-guardado-logo"
+                        title={proveedor.provider_name}
+                      >
+                        {proveedor.logo_path ? (
+                          <img
+                            src={`https://image.tmdb.org/t/p/w45${proveedor.logo_path}`}
+                            alt={proveedor.provider_name}
+                          />
+                        ) : (
+                          <span>📺</span>
+                        )}
 
-                          <span>{proveedor.provider_name}</span>
-                        </div>
-                      ))}
-                    </div>
+                        <span>{proveedor.provider_name}</span>
+                      </div>
+                    ))}
                   </div>
-                </section>
+                </div>
               )}
 
               {peliculaSeleccionada.reparto && (
-                <section className="bloque-modal">
-                  <h3>Reparto</h3>
-                  <p className="reparto">
-                    {peliculaSeleccionada.reparto}
-                  </p>
-                </section>
+                <p className="reparto">
+                  <strong>Reparto:</strong> {peliculaSeleccionada.reparto}
+                </p>
               )}
 
               <div className="botones-ficha">
@@ -1267,9 +1300,7 @@ function App() {
               </div>
 
               {!peliculaSeleccionada.vista && (
-                <section className="bloque-modal">
-                  <h3>Opinión de la casa</h3>
-
+                <>
                   <div className="modal-puntaje">
                     Puntaje actual:{" "}
                     <strong>
@@ -1287,48 +1318,24 @@ function App() {
                       >
                         <span>{nombre}</span>
 
-                        <div className="chips-opinion">
-                          {opciones.map((opcion) => {
-                            const estaSeleccionada =
-                              peliculaSeleccionada.opiniones[nombre] === opcion;
+                        <select
+                          value={peliculaSeleccionada.opiniones[nombre] || ""}
+                          onChange={(e) =>
+                            agregarOpinion(
+                              peliculaSeleccionada.id,
+                              nombre,
+                              e.target.value
+                            )
+                          }
+                        >
+                          <option value="">Sin opinión</option>
 
-                            return (
-                              <button
-                                key={opcion}
-                                type="button"
-                                className={`chip-opinion ${obtenerClaseOpinion(
-                                  opcion
-                                )} ${estaSeleccionada ? "activo" : ""}`}
-                                onClick={() =>
-                                  agregarOpinion(
-                                    peliculaSeleccionada.id,
-                                    nombre,
-                                    opcion
-                                  )
-                                }
-                              >
-                                <span>{obtenerEmojiOpinion(opcion)}</span>
-                                {opcion}
-                              </button>
-                            );
-                          })}
-
-                          {peliculaSeleccionada.opiniones[nombre] && (
-                            <button
-                              type="button"
-                              className="chip-opinion quitar-opinion"
-                              onClick={() =>
-                                agregarOpinion(
-                                  peliculaSeleccionada.id,
-                                  nombre,
-                                  ""
-                                )
-                              }
-                            >
-                              Quitar
-                            </button>
-                          )}
-                        </div>
+                          {opciones.map((opcion) => (
+                            <option key={opcion} value={opcion}>
+                              {opcion}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     ))}
                   </div>
@@ -1363,13 +1370,11 @@ function App() {
                       )}
                     </span>
                   </div>
-                </section>
+                </>
               )}
 
               {peliculaSeleccionada.vista && (
-                <section className="bloque-modal">
-                  <h3>Calificación de la casa</h3>
-
+                <>
                   <p className="calificacion">
                     Promedio de la casa: ⭐{" "}
                     {calcularPromedio(peliculaSeleccionada.calificaciones) || "-"}{" "}
@@ -1394,14 +1399,13 @@ function App() {
                       </div>
                     ))}
                   </div>
-                </section>
+                </>
               )}
 
               {peliculasSimilares.length > 0 && (
-                <section className="bloque-modal">
-                  <h3>Puede que también te guste</h3>
-                  <div className="similares">
-                    <div className="similares-grid">
+                <div className="similares">
+                  <p className="similares-titulo">🎬 Puede que también te guste:</p>
+                  <div className="similares-grid">
                     {peliculasSimilares.map((sim) => (
                       <div key={sim.id} className="similar-item">
                         {sim.poster_path ? (
@@ -1418,9 +1422,8 @@ function App() {
                         )}
                       </div>
                     ))}
-                    </div>
                   </div>
-                </section>
+                </div>
               )}
 
               <div className="acciones acciones-modal">
@@ -1452,7 +1455,6 @@ function App() {
       <nav className="barra-mobile">
         <button
           type="button"
-          className={formularioAbierto ? "activo" : ""}
           onClick={() => {
             setFormularioAbierto(true);
             setFiltrosAbiertos(false);
@@ -1470,7 +1472,6 @@ function App() {
 
         <button
           type="button"
-          className={filtrosAbiertos ? "activo" : ""}
           onClick={() => {
             setFiltrosAbiertos(!filtrosAbiertos);
             setFormularioAbierto(false);
@@ -1488,7 +1489,6 @@ function App() {
 
         <button
           type="button"
-          className={seleccionHoyAbierta ? "activo" : ""}
           onClick={() => {
             setSeleccionHoyAbierta(!seleccionHoyAbierta);
             setFormularioAbierto(false);
@@ -1504,8 +1504,6 @@ function App() {
           <small>Mejor</small>
         </button>
       </nav>
-
-      {toast && <div className="toast-app">{toast}</div>}
 
       {trailerAbierto && peliculaSeleccionada?.trailer_key && (
         <div className="modal-trailer-fondo" onClick={() => setTrailerAbierto(false)}>

@@ -4851,4 +4851,24 @@ textarea:focus {
       0 18px 45px rgba(0, 0, 0, 0.28),
       0 0 0 1px rgba(34, 197, 94, 0.08) !important;
   }
+} 
+/* FILTROS MEJORADOS */
+
+.filtros {
+  align-items: center;
+}
+
+.filtro-select {
+  min-width: 160px;
+}
+
+@media (max-width: 650px) {
+  .filtros {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .filtro-select {
+    grid-column: span 3;
+    width: 100%;
+  }
 }
