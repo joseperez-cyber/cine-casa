@@ -4648,3 +4648,207 @@ textarea:focus {
     }
   }
 }
+/* ================================================= */
+/* SKELETON LOADING */
+/* ================================================= */
+
+.skeleton-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.skeleton-card {
+  background: rgba(15, 23, 42, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 18px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.skeleton-poster,
+.skeleton-line {
+  position: relative;
+  overflow: hidden;
+  background: rgba(51, 65, 85, 0.65);
+}
+
+.skeleton-poster::after,
+.skeleton-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: skeletonShimmer 1.25s infinite;
+}
+
+.skeleton-poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 14px;
+  margin-bottom: 10px;
+}
+
+.skeleton-line {
+  height: 13px;
+  border-radius: 999px;
+  margin-bottom: 7px;
+}
+
+.skeleton-line.small {
+  width: 58%;
+  height: 10px;
+}
+
+@keyframes skeletonShimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 650px) {
+  .skeleton-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 13px 9px;
+  }
+
+  .skeleton-card {
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .skeleton-poster {
+    border-radius: 10px;
+    margin-bottom: 7px;
+  }
+
+  .skeleton-line {
+    height: 11px;
+  }
+
+  .skeleton-line.small {
+    height: 9px;
+  }
+}
+
+/* ================================================= */
+/* SECCIONES MÁS ELEGANTES EN MODAL */
+/* ================================================= */
+
+.bloque-modal {
+  margin-top: 16px;
+}
+
+.bloque-modal h3 {
+  margin: 0 0 8px 0;
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.bloque-modal h3::after {
+  content: "";
+  display: block;
+  width: 34px;
+  height: 2px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #facc15, transparent);
+}
+
+.bloque-modal .modal-descripcion,
+.bloque-modal .reparto,
+.bloque-modal .streaming-guardado,
+.bloque-modal .modal-puntaje,
+.bloque-modal .calificacion,
+.bloque-modal .opiniones-personas,
+.bloque-modal .calificaciones-personas,
+.bloque-modal .similares {
+  margin-top: 0;
+}
+
+.bloque-modal .reparto {
+  color: var(--texto-suave);
+}
+
+@media (max-width: 650px) {
+  .bloque-modal {
+    margin-top: 13px;
+  }
+
+  .bloque-modal h3 {
+    font-size: 11px;
+    margin-bottom: 7px;
+  }
+
+  .bloque-modal h3::after {
+    width: 28px;
+    margin-top: 5px;
+  }
+}
+
+/* ================================================= */
+/* ANIMACIÓN AL MARCAR COMO VISTA */
+/* ================================================= */
+
+.pelicula.vista .poster {
+  animation: vistaGlow 0.65s ease both;
+}
+
+@keyframes vistaGlow {
+  0% {
+    box-shadow:
+      0 0 0 rgba(34, 197, 94, 0),
+      0 8px 18px rgba(0, 0, 0, 0.35);
+  }
+
+  45% {
+    box-shadow:
+      0 0 0 4px rgba(34, 197, 94, 0.25),
+      0 0 28px rgba(34, 197, 94, 0.38),
+      0 8px 18px rgba(0, 0, 0, 0.35);
+  }
+
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(34, 197, 94, 0.16),
+      0 0 22px rgba(34, 197, 94, 0.16),
+      0 8px 20px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.pelicula.vista {
+  animation: tarjetaVistaEntrada 0.35s ease both;
+}
+
+@keyframes tarjetaVistaEntrada {
+  from {
+    transform: scale(0.985);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+/* En desktop, el efecto de vista se conserva pero más sobrio */
+@media (min-width: 651px) {
+  .pelicula.vista {
+    border-color: rgba(34, 197, 94, 0.38) !important;
+    box-shadow:
+      0 18px 45px rgba(0, 0, 0, 0.28),
+      0 0 0 1px rgba(34, 197, 94, 0.08) !important;
+  }
+}

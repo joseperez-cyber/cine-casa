@@ -1045,7 +1045,15 @@ function App() {
 
       <section className="lista">
         {cargando ? (
-          <p className="vacio">Cargando películas...</p>
+          <div className="skeleton-grid">
+            {[1, 2, 3, 4, 5, 6].map((item) => (
+              <div key={item} className="skeleton-card">
+                <div className="skeleton-poster"></div>
+                <div className="skeleton-line"></div>
+                <div className="skeleton-line small"></div>
+              </div>
+            ))}
+          </div>
         ) : error ? (
           <p className="vacio">{error}</p>
         ) : peliculasOrdenadas.length === 0 ? (
@@ -1191,44 +1199,53 @@ function App() {
               </div>
 
               {peliculaSeleccionada.descripcion && (
-                <p className="descripcion modal-descripcion">
-                  {peliculaSeleccionada.descripcion}
-                </p>
+                <section className="bloque-modal">
+                  <h3>Sinopsis</h3>
+                  <p className="descripcion modal-descripcion">
+                    {peliculaSeleccionada.descripcion}
+                  </p>
+                </section>
               )}
 
               {peliculaSeleccionada.streaming_mx?.length > 0 && (
-                <div className="streaming-guardado">
-                  <p className="streaming-guardado-titulo">
-                    📺 Disponible en streaming:
-                  </p>
+                <section className="bloque-modal">
+                  <h3>Dónde verla</h3>
+                  <div className="streaming-guardado">
+                    <p className="streaming-guardado-titulo">
+                      📺 Disponible en streaming:
+                    </p>
 
-                  <div className="streaming-guardado-logos">
-                    {peliculaSeleccionada.streaming_mx.map((proveedor) => (
-                      <div
-                        key={proveedor.provider_id}
-                        className="streaming-guardado-logo"
-                        title={proveedor.provider_name}
-                      >
-                        {proveedor.logo_path ? (
-                          <img
-                            src={`https://image.tmdb.org/t/p/w45${proveedor.logo_path}`}
-                            alt={proveedor.provider_name}
-                          />
-                        ) : (
-                          <span>📺</span>
-                        )}
+                    <div className="streaming-guardado-logos">
+                      {peliculaSeleccionada.streaming_mx.map((proveedor) => (
+                        <div
+                          key={proveedor.provider_id}
+                          className="streaming-guardado-logo"
+                          title={proveedor.provider_name}
+                        >
+                          {proveedor.logo_path ? (
+                            <img
+                              src={`https://image.tmdb.org/t/p/w45${proveedor.logo_path}`}
+                              alt={proveedor.provider_name}
+                            />
+                          ) : (
+                            <span>📺</span>
+                          )}
 
-                        <span>{proveedor.provider_name}</span>
-                      </div>
-                    ))}
+                          <span>{proveedor.provider_name}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                </section>
               )}
 
               {peliculaSeleccionada.reparto && (
-                <p className="reparto">
-                  <strong>Reparto:</strong> {peliculaSeleccionada.reparto}
-                </p>
+                <section className="bloque-modal">
+                  <h3>Reparto</h3>
+                  <p className="reparto">
+                    {peliculaSeleccionada.reparto}
+                  </p>
+                </section>
               )}
 
               <div className="botones-ficha">
@@ -1250,7 +1267,9 @@ function App() {
               </div>
 
               {!peliculaSeleccionada.vista && (
-                <>
+                <section className="bloque-modal">
+                  <h3>Opinión de la casa</h3>
+
                   <div className="modal-puntaje">
                     Puntaje actual:{" "}
                     <strong>
@@ -1344,11 +1363,13 @@ function App() {
                       )}
                     </span>
                   </div>
-                </>
+                </section>
               )}
 
               {peliculaSeleccionada.vista && (
-                <>
+                <section className="bloque-modal">
+                  <h3>Calificación de la casa</h3>
+
                   <p className="calificacion">
                     Promedio de la casa: ⭐{" "}
                     {calcularPromedio(peliculaSeleccionada.calificaciones) || "-"}{" "}
@@ -1373,13 +1394,14 @@ function App() {
                       </div>
                     ))}
                   </div>
-                </>
+                </section>
               )}
 
               {peliculasSimilares.length > 0 && (
-                <div className="similares">
-                  <p className="similares-titulo">🎬 Puede que también te guste:</p>
-                  <div className="similares-grid">
+                <section className="bloque-modal">
+                  <h3>Puede que también te guste</h3>
+                  <div className="similares">
+                    <div className="similares-grid">
                     {peliculasSimilares.map((sim) => (
                       <div key={sim.id} className="similar-item">
                         {sim.poster_path ? (
@@ -1396,8 +1418,9 @@ function App() {
                         )}
                       </div>
                     ))}
+                    </div>
                   </div>
-                </div>
+                </section>
               )}
 
               <div className="acciones acciones-modal">
