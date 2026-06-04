@@ -4490,3 +4490,161 @@ textarea:focus {
   background-position: center !important;
   background-repeat: no-repeat !important;
 }
+/* ================================================= */
+/* FIX MODAL / MÓDULOS EN COMPUTADORA */
+/* ================================================= */
+
+@media (min-width: 651px) {
+  .barra-mobile {
+    display: none !important;
+  }
+
+  .modal-fondo {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 28px !important;
+    margin: 0 !important;
+
+    overflow-y: auto !important;
+    background: rgba(3, 7, 18, 0.82) !important;
+    backdrop-filter: blur(8px) !important;
+
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+  }
+
+  .modal-pelicula {
+    position: relative !important;
+
+    width: min(1050px, 96vw) !important;
+    max-height: 90vh !important;
+    min-height: auto !important;
+    height: auto !important;
+
+    display: grid !important;
+    grid-template-columns: minmax(240px, 330px) 1fr !important;
+    gap: 24px !important;
+
+    padding: 24px !important;
+    margin: auto !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    border-radius: 28px !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+
+    background-image:
+      linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.72),
+        rgba(15, 23, 42, 0.94)
+      ),
+      var(--modal-poster-bg) !important;
+
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.65) !important;
+
+    pointer-events: auto !important;
+    animation: abrirModalDesktop 0.22s ease both !important;
+  }
+
+  .modal-pelicula::before,
+  .modal-pelicula::after {
+    pointer-events: none !important;
+  }
+
+  .modal-poster {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 430px !important;
+    max-height: none !important;
+
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    align-self: start !important;
+  }
+
+  .modal-poster img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  .modal-contenido {
+    width: 100% !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .cerrar-modal {
+    position: absolute !important;
+    top: 16px !important;
+    right: 16px !important;
+
+    width: 42px !important;
+    height: 42px !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    z-index: 20 !important;
+
+    background: rgba(15, 23, 42, 0.96) !important;
+    color: white !important;
+    border: 1px solid rgba(148, 163, 184, 0.35) !important;
+    border-radius: 999px !important;
+
+    cursor: pointer !important;
+  }
+
+  .acciones-modal {
+    position: static !important;
+    margin: 18px 0 0 0 !important;
+    padding: 0 !important;
+
+    background: transparent !important;
+    border-top: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .acciones-modal button {
+    cursor: pointer !important;
+  }
+
+  .pelicula {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+  }
+
+  .pelicula * {
+    pointer-events: none;
+  }
+
+  .pelicula {
+    pointer-events: auto;
+  }
+
+  @keyframes abrirModalDesktop {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}
