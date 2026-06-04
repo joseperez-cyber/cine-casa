@@ -3189,3 +3189,222 @@ button:hover::after {
     transform: none !important;
   }
 }
+/* ================================================= */
+/* RESET FINAL MODAL MÓVIL — BOTTOM SHEET ESTABLE */
+/* ================================================= */
+
+@media (max-width: 650px) {
+  .modal-fondo {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: hidden !important;
+    background: rgba(3, 7, 18, 0.86) !important;
+    backdrop-filter: blur(8px) !important;
+    z-index: 9999 !important;
+
+    animation: fondoModalMobile 0.2s ease both !important;
+  }
+
+  .modal-pelicula {
+    all: unset;
+    box-sizing: border-box !important;
+
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+
+    width: 100% !important;
+    max-width: 520px !important;
+
+    height: 82vh !important;
+    height: 82dvh !important;
+    max-height: 82vh !important;
+    max-height: 82dvh !important;
+
+    margin: 0 !important;
+    padding: 12px !important;
+    padding-bottom: 0 !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+
+    background:
+      radial-gradient(circle at top right, rgba(250, 204, 21, 0.08), transparent 28%),
+      rgba(15, 23, 42, 0.99) !important;
+
+    color: var(--texto) !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    border-bottom: none !important;
+    border-radius: 24px 24px 0 0 !important;
+
+    box-shadow: 0 -24px 70px rgba(0, 0, 0, 0.68) !important;
+
+    animation: subirModalMobile 0.28s cubic-bezier(0.2, 0.85, 0.25, 1) both !important;
+  }
+
+  .modal-pelicula *,
+  .modal-pelicula *::before,
+  .modal-pelicula *::after {
+    box-sizing: border-box;
+  }
+
+  .modal-pelicula::before {
+    content: "";
+    width: 46px;
+    height: 4px;
+    background: rgba(156, 163, 175, 0.55);
+    border-radius: 999px;
+    display: block;
+    margin: 2px auto 8px auto;
+    flex-shrink: 0;
+  }
+
+  .cerrar-modal {
+    all: unset;
+    box-sizing: border-box !important;
+
+    position: sticky !important;
+    top: 0 !important;
+    align-self: flex-end !important;
+
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+
+    margin: 0 !important;
+    margin-bottom: -36px !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    z-index: 80 !important;
+
+    background: rgba(15, 23, 42, 0.96) !important;
+    color: white !important;
+    border: 1px solid rgba(148, 163, 184, 0.35) !important;
+    border-radius: 999px !important;
+
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  .cerrar-modal:active {
+    transform: scale(0.92) !important;
+  }
+
+  .modal-poster {
+    width: 100% !important;
+    height: 175px !important;
+    min-height: 175px !important;
+    max-height: 175px !important;
+
+    flex-shrink: 0 !important;
+
+    margin: 0 0 12px 0 !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+
+    background: #020617 !important;
+  }
+
+  .modal-poster img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  .modal-contenido {
+    width: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  .modal-subtitulo {
+    margin: 0 0 6px 0 !important;
+    font-size: 10px !important;
+  }
+
+  .modal-contenido h2 {
+    margin: 0 !important;
+    font-size: 24px !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.4px !important;
+  }
+
+  .modal-propuesta {
+    margin: 7px 0 0 0 !important;
+    font-size: 12px !important;
+  }
+
+  .modal-contenido .etiquetas {
+    margin-top: 10px !important;
+  }
+
+  .modal-descripcion {
+    max-height: 100px !important;
+    overflow-y: auto !important;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+  }
+
+  .acciones-modal {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 70 !important;
+
+    margin: 14px -12px 0 -12px !important;
+    padding: 10px 12px 14px 12px !important;
+
+    background: rgba(22, 27, 39, 0.98) !important;
+    border-top: 1px solid var(--linea) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  .acciones-modal button {
+    min-height: 40px !important;
+    border-radius: 11px !important;
+    font-size: 12px !important;
+  }
+
+  @keyframes fondoModalMobile {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes subirModalMobile {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+}
