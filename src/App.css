@@ -4437,3 +4437,56 @@ textarea:focus {
     z-index: 2;
   }
 }
+/* ================================================= */
+/* FONDO DINÁMICO DIRECTO DEL MODAL */
+/* ================================================= */
+
+.modal-pelicula {
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.88),
+      rgba(15, 23, 42, 0.96)
+    ),
+    var(--modal-poster-bg) !important;
+
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Para que el póster no compita demasiado con el contenido */
+.modal-pelicula .modal-contenido,
+.modal-pelicula .modal-poster {
+  position: relative;
+  z-index: 2;
+}
+
+/* En celular lo dejamos un poco más oscuro para que se lea bien */
+@media (max-width: 650px) {
+  .modal-pelicula {
+    background-image:
+      linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.9),
+        rgba(15, 23, 42, 0.97)
+      ),
+      var(--modal-poster-bg) !important;
+
+    background-size: cover !important;
+    background-position: center !important;
+  }
+}
+.modal-pelicula {
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.55),
+      rgba(15, 23, 42, 0.78)
+    ),
+    var(--modal-poster-bg) !important;
+
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
