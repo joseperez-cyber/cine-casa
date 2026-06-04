@@ -4890,18 +4890,23 @@ textarea:focus {
     background-position: center !important;
   }
 
-  /* ================================================= */
-/* FONDO  cambio general 1 */
+/* ================================================= */
+/* FONDO CON TEXTURA TIPO GRANO DE PELÍCULA */
 /* ================================================= */
 
+html {
+  background: #020617;
 }
+
 body {
+  min-height: 100vh;
   background:
-    radial-gradient(circle at 18% 8%, rgba(250, 204, 21, 0.14), transparent 28%),
-    radial-gradient(circle at 84% 18%, rgba(34, 197, 94, 0.12), transparent 30%),
-    radial-gradient(circle at 50% 100%, rgba(59, 130, 246, 0.12), transparent 36%),
-    linear-gradient(135deg, #020617 0%, #0f172a 48%, #030712 100%);
+    radial-gradient(circle at 20% 0%, rgba(250, 204, 21, 0.13), transparent 28%),
+    radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.16), transparent 32%),
+    radial-gradient(circle at 50% 100%, rgba(34, 197, 94, 0.08), transparent 30%),
+    linear-gradient(135deg, #020617 0%, #0f172a 55%, #111827 100%);
   position: relative;
+  background-attachment: fixed;
 }
 
 body::before {
@@ -4910,7 +4915,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  opacity: 0.055;
+  opacity: 0.07;
   background-image:
     repeating-radial-gradient(
       circle at 0 0,
@@ -4919,4 +4924,10 @@ body::before {
       transparent 1px,
       transparent 4px
     );
+}
+
+/* Refuerzo para que la textura no tape modales ni botones */
+#root {
+  position: relative;
+  z-index: 1;
 }
