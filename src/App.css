@@ -1589,3 +1589,495 @@ button:hover,
     font-size: 12px;
   }
 }
+/* ============================= */
+/* MEJORA UX MÓVIL GENERAL */
+/* ============================= */
+
+@media (max-width: 650px) {
+  body {
+    background:
+      radial-gradient(circle at top, rgba(250, 204, 21, 0.08), transparent 28%),
+      var(--fondo);
+  }
+
+  .contenedor {
+    width: min(100% - 18px, 1180px);
+    padding: 16px 0 26px 0;
+  }
+
+  .encabezado {
+    margin-bottom: 18px;
+    padding-top: 4px;
+  }
+
+  .encabezado h1 {
+    font-size: 34px;
+    line-height: 1;
+    letter-spacing: -0.8px;
+  }
+
+  .encabezado p {
+    font-size: 13px;
+    margin-top: 8px;
+    max-width: 300px;
+  }
+
+  /* Botones desplegables más compactos */
+
+  .boton-desplegar-formulario,
+  .boton-desplegar-seleccion,
+  .boton-desplegar-filtros {
+    min-height: 44px;
+    border-radius: 15px;
+    padding: 11px 13px;
+    font-size: 13px;
+  }
+
+  .panel-agregar,
+  .panel-seleccion-hoy,
+  .panel-filtros-mobile {
+    margin-bottom: 10px;
+  }
+
+  /* Formulario TMDb más limpio */
+
+  .formulario {
+    padding: 12px;
+    border-radius: 16px;
+    gap: 10px;
+  }
+
+  .buscador-tmdb-simple input {
+    min-height: 44px;
+    border-radius: 13px;
+    font-size: 14px;
+  }
+
+  .resultados-tmdb {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .resultado-tmdb {
+    min-height: 68px;
+    border-radius: 13px;
+  }
+
+  .pelicula-seleccionada-preview {
+    grid-template-columns: 64px 1fr;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 15px;
+  }
+
+  .pelicula-seleccionada-preview img {
+    width: 64px;
+    height: 96px;
+    border-radius: 9px;
+  }
+
+  .pelicula-seleccionada-preview h3 {
+    font-size: 17px;
+    line-height: 1.08;
+  }
+
+  .preview-label {
+    font-size: 10px;
+  }
+
+  .preview-descripcion {
+    font-size: 12px;
+    line-height: 1.35;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  /* Filtros móviles más compactos */
+
+  .zona-filtros.abierta {
+    margin-bottom: 10px;
+  }
+
+  .buscador {
+    margin-bottom: 8px;
+  }
+
+  .buscador input {
+    min-height: 42px;
+    border-radius: 14px;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .filtros {
+    padding: 9px;
+    gap: 6px;
+    border-radius: 15px;
+    margin-bottom: 12px;
+  }
+
+  .filtros button,
+  .filtro-select {
+    min-height: 34px;
+    font-size: 11px;
+    padding: 7px 8px;
+  }
+
+  /* Mejor opción plegable más ligera */
+
+  .mejor-opcion {
+    padding: 14px;
+    border-radius: 17px;
+    margin-bottom: 14px;
+  }
+
+  .mejor-opcion h2 {
+    font-size: 22px;
+    line-height: 1.08;
+  }
+
+  .puntaje-mejor {
+    min-width: 46px;
+    height: 46px;
+    font-size: 17px;
+  }
+
+  .mejor-opcion .descripcion {
+    display: none;
+  }
+
+  /* Tarjetas de película tipo catálogo */
+
+  .lista {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+  }
+
+  .pelicula {
+    padding: 6px;
+    border-radius: 15px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  }
+
+  .pelicula:hover {
+    transform: none;
+  }
+
+  .poster {
+    height: 150px;
+    border-radius: 11px;
+    margin-bottom: 7px;
+  }
+
+  .datos-pelicula {
+    display: block;
+    position: relative;
+  }
+
+  .datos-pelicula h2 {
+    font-size: 12px;
+    line-height: 1.12;
+    letter-spacing: -0.15px;
+    padding-right: 28px;
+    min-height: 27px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .datos-pelicula p,
+  .datos-pelicula .etiquetas,
+  .abrir-detalle {
+    display: none !important;
+  }
+
+  .puntaje {
+    position: absolute;
+    top: -2px;
+    right: 0;
+    min-width: 24px;
+    height: 24px;
+    font-size: 10px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  .badge-vista {
+    margin-bottom: 6px;
+    padding: 3px 6px;
+    font-size: 9px;
+  }
+
+  /* Modal como hoja inferior */
+
+  .modal-fondo {
+    align-items: flex-end;
+    padding: 0;
+    background: rgba(3, 7, 18, 0.84);
+  }
+
+  .modal-pelicula {
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    border-radius: 24px 24px 0 0;
+    padding: 12px;
+    padding-bottom: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .modal-pelicula::before {
+    content: "";
+    width: 42px;
+    height: 4px;
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 999px;
+    display: block;
+    margin: 2px auto 4px auto;
+  }
+
+  .cerrar-modal {
+    position: sticky;
+    top: 0;
+    margin-left: auto;
+    z-index: 20;
+    width: 42px;
+    height: 42px;
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    color: white;
+    backdrop-filter: blur(8px);
+  }
+
+  .modal-poster {
+    height: 210px;
+    border-radius: 16px;
+  }
+
+  .modal-contenido {
+    padding: 0;
+  }
+
+  .modal-subtitulo {
+    font-size: 10px;
+    margin-bottom: 5px;
+  }
+
+  .modal-contenido h2 {
+    font-size: 26px;
+    line-height: 1.05;
+    letter-spacing: -0.5px;
+  }
+
+  .modal-propuesta {
+    font-size: 12px;
+    margin-top: 7px;
+  }
+
+  .modal-contenido .etiquetas {
+    margin-top: 10px;
+    gap: 5px;
+  }
+
+  .modal-contenido .etiquetas span {
+    font-size: 10px;
+    padding: 4px 7px;
+  }
+
+  .modal-descripcion {
+    max-height: 110px;
+    overflow-y: auto;
+    padding-right: 4px;
+    font-size: 13px !important;
+    line-height: 1.45;
+  }
+
+  .reparto {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .streaming-guardado {
+    padding: 10px;
+    border-radius: 14px;
+  }
+
+  .streaming-guardado-titulo {
+    font-size: 12px;
+  }
+
+  .streaming-guardado-logos {
+    gap: 7px;
+  }
+
+  .streaming-guardado-logo {
+    font-size: 10px;
+    padding: 5px 7px 5px 5px;
+  }
+
+  .streaming-guardado-logo img {
+    width: 21px;
+    height: 21px;
+    border-radius: 6px;
+  }
+
+  /* Botones principales más fáciles de tocar */
+
+  .botones-ficha {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 14px 0 6px 0;
+  }
+
+  .boton-trailer,
+  .boton-compartir {
+    min-height: 42px;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+
+  .scores-pelicula {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 12px 0 4px 0;
+  }
+
+  .scores-pelicula div {
+    padding: 10px;
+    border-radius: 13px;
+  }
+
+  .scores-pelicula span {
+    font-size: 10px;
+  }
+
+  .scores-pelicula strong {
+    font-size: 14px;
+  }
+
+  /* Votos y estrellas más cómodos */
+
+  .modal-puntaje {
+    padding: 10px 12px;
+    border-radius: 13px;
+    font-size: 13px;
+  }
+
+  .opiniones-personas,
+  .calificaciones-personas {
+    gap: 7px;
+  }
+
+  .opinion-persona,
+  .calificacion-persona {
+    padding: 8px;
+    border-radius: 12px;
+  }
+
+  .opinion-persona span,
+  .calificacion-persona span {
+    font-size: 11px;
+    margin-bottom: 5px;
+  }
+
+  .opinion-persona select {
+    min-height: 36px;
+    font-size: 12px;
+    border-radius: 9px;
+  }
+
+  .estrella {
+    font-size: 22px;
+    padding: 1px;
+  }
+
+  .limpiar-estrellas {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+
+  .resumen-opiniones {
+    gap: 5px;
+  }
+
+  .resumen-opiniones span {
+    font-size: 11px;
+    padding: 4px 7px;
+  }
+
+  /* Similares más compactas */
+
+  .similares {
+    margin-top: 14px;
+  }
+
+  .similares-titulo {
+    font-size: 12px;
+  }
+
+  .similares-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 7px;
+  }
+
+  .similar-item img,
+  .similar-sin-poster {
+    height: 105px;
+    border-radius: 9px;
+  }
+
+  .similar-item span {
+    font-size: 10px;
+    line-height: 1.15;
+  }
+
+  .similar-anio {
+    font-size: 9px !important;
+  }
+
+  /* Acciones fijas abajo dentro de la ficha */
+
+  .acciones-modal {
+    position: sticky;
+    bottom: 0;
+    background: rgba(22, 27, 39, 0.98);
+    border-top: 1px solid var(--linea);
+    padding: 10px 0 12px 0;
+    margin-top: 14px;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+  }
+
+  .acciones-modal button {
+    min-height: 40px;
+    font-size: 12px;
+    border-radius: 11px;
+  }
+
+  /* Modal trailer */
+
+  .modal-trailer-fondo {
+    padding: 10px;
+  }
+
+  .modal-trailer {
+    border-radius: 18px;
+    padding: 10px;
+  }
+
+  .cerrar-trailer {
+    top: -8px;
+    right: -8px;
+  }
+
+  .video-trailer {
+    border-radius: 13px;
+  }
+}
