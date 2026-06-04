@@ -573,6 +573,14 @@ function App() {
     return "";
   }
 
+  function obtenerEmojiOpinion(opinion) {
+    if (opinion === "Me urge verla") return "🔥";
+    if (opinion === "La quiero ver") return "✅";
+    if (opinion === "Puede que sí") return "🤔";
+    if (opinion === "No la quiero ver") return "❌";
+    return "";
+  }
+
   function calcularPuntos(opiniones) {
     return Object.values(opiniones).reduce((total, opinion) => {
       if (opinion === "Me urge verla") return total + 3;
@@ -1232,24 +1240,48 @@ function App() {
                       >
                         <span>{nombre}</span>
 
-                        <select
-                          value={peliculaSeleccionada.opiniones[nombre] || ""}
-                          onChange={(e) =>
-                            agregarOpinion(
-                              peliculaSeleccionada.id,
-                              nombre,
-                              e.target.value
-                            )
-                          }
-                        >
-                          <option value="">Sin opinión</option>
+                        <div className="chips-opinion">
+                          {opciones.map((opcion) => {
+                            const estaSeleccionada =
+                              peliculaSeleccionada.opiniones[nombre] === opcion;
 
-                          {opciones.map((opcion) => (
-                            <option key={opcion} value={opcion}>
-                              {opcion}
-                            </option>
-                          ))}
-                        </select>
+                            return (
+                              <button
+                                key={opcion}
+                                type="button"
+                                className={`chip-opinion ${obtenerClaseOpinion(
+                                  opcion
+                                )} ${estaSeleccionada ? "activo" : ""}`}
+                                onClick={() =>
+                                  agregarOpinion(
+                                    peliculaSeleccionada.id,
+                                    nombre,
+                                    opcion
+                                  )
+                                }
+                              >
+                                <span>{obtenerEmojiOpinion(opcion)}</span>
+                                {opcion}
+                              </button>
+                            );
+                          })}
+
+                          {peliculaSeleccionada.opiniones[nombre] && (
+                            <button
+                              type="button"
+                              className="chip-opinion quitar-opinion"
+                              onClick={() =>
+                                agregarOpinion(
+                                  peliculaSeleccionada.id,
+                                  nombre,
+                                  ""
+                                )
+                              }
+                            >
+                              Quitar
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
