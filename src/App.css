@@ -3010,3 +3010,182 @@ button:hover::after {
     height: 118px;
   }
 }
+/* ================================================= */
+/* FIX FINAL: MODAL / FICHA ESTABLE EN CELULAR */
+/* ================================================= */
+
+@media (max-width: 650px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  body:has(.modal-fondo) {
+    overflow: hidden;
+  }
+
+  .modal-fondo {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100svh !important;
+    min-height: 100svh !important;
+    max-height: 100svh !important;
+
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: hidden !important;
+    background: rgba(3, 7, 18, 0.86) !important;
+    backdrop-filter: blur(8px);
+    z-index: 9999 !important;
+  }
+
+  .modal-pelicula {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+
+    width: 100vw !important;
+    height: 86svh !important;
+    max-height: 86svh !important;
+    min-height: 86svh !important;
+
+    margin: 0 !important;
+    padding: 12px !important;
+    padding-bottom: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: none !important;
+    gap: 10px !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+
+    border-radius: 24px 24px 0 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+
+    transform: none !important;
+    animation: subirFichaEstable 0.22s ease-out both !important;
+  }
+
+  @keyframes subirFichaEstable {
+    from {
+      opacity: 0;
+      transform: translateY(100%) !important;
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) !important;
+    }
+  }
+
+  .modal-pelicula::before {
+    content: "";
+    width: 42px;
+    height: 4px;
+    background: rgba(156, 163, 175, 0.55);
+    border-radius: 999px;
+    display: block;
+    margin: 2px auto 4px auto;
+    flex-shrink: 0;
+  }
+
+  .cerrar-modal {
+    position: sticky !important;
+    top: 0 !important;
+    right: auto !important;
+    align-self: flex-end !important;
+
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+
+    margin: 0 !important;
+    margin-bottom: -34px !important;
+    padding: 0 !important;
+
+    z-index: 80 !important;
+    background: rgba(15, 23, 42, 0.96) !important;
+    color: white !important;
+    border: 1px solid rgba(148, 163, 184, 0.35) !important;
+    border-radius: 50% !important;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+  }
+
+  .modal-poster {
+    width: 100% !important;
+    height: 185px !important;
+    min-height: 185px !important;
+    max-height: 185px !important;
+    flex-shrink: 0 !important;
+    border-radius: 16px !important;
+  }
+
+  .modal-contenido {
+    flex: 1 !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .modal-contenido h2 {
+    font-size: 25px !important;
+    line-height: 1.05 !important;
+  }
+
+  .modal-descripcion {
+    max-height: 105px !important;
+    overflow-y: auto !important;
+  }
+
+  .acciones-modal {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 70 !important;
+
+    margin-left: -12px !important;
+    margin-right: -12px !important;
+    margin-bottom: 0 !important;
+
+    padding: 10px 12px 14px 12px !important;
+
+    background: rgba(22, 27, 39, 0.98) !important;
+    border-top: 1px solid var(--linea) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  .acciones-modal button {
+    min-height: 40px !important;
+  }
+
+  .modal-trailer-fondo {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100svh !important;
+    padding: 12px !important;
+    z-index: 10000 !important;
+  }
+
+  .modal-trailer {
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
+  }
+}
