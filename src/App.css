@@ -4966,3 +4966,190 @@ body::after {
     transform: translate(-50%, -50%);
   }
 }
+
+/* ================================================= */
+/* FILTROS MÓVILES MÁS LIMPIOS Y TIPO APP */
+/* ================================================= */
+
+@media (max-width: 650px) {
+  .zona-filtros.abierta {
+    animation: desplegarFiltrosMobile 0.22s ease both;
+  }
+
+  @keyframes desplegarFiltrosMobile {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .zona-filtros {
+    margin-bottom: 12px;
+  }
+
+  .buscador {
+    margin-bottom: 10px !important;
+  }
+
+  .buscador input {
+    min-height: 46px !important;
+    padding: 12px 14px !important;
+    border-radius: 16px !important;
+
+    background:
+      linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.72)) !important;
+
+    border: 1px solid rgba(148, 163, 184, 0.18) !important;
+    color: #f8fafc !important;
+
+    font-size: 14px !important;
+    font-weight: 700;
+
+    box-shadow:
+      0 10px 26px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .buscador input::placeholder {
+    color: #64748b !important;
+  }
+
+  .filtros {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 9px !important;
+
+    padding: 12px !important;
+    margin-bottom: 14px !important;
+
+    border-radius: 22px !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+
+    background:
+      radial-gradient(circle at top left, rgba(250, 204, 21, 0.08), transparent 34%),
+      linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.82)) !important;
+
+    backdrop-filter: blur(16px) !important;
+
+    box-shadow:
+      0 16px 42px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  /* Pestañas: Pendientes / Vistas / Todas */
+  .filtros button:nth-child(1),
+  .filtros button:nth-child(2),
+  .filtros button:nth-child(3) {
+    min-height: 38px !important;
+    padding: 8px 6px !important;
+
+    border-radius: 999px !important;
+    border: 1px solid rgba(148, 163, 184, 0.14) !important;
+
+    background: rgba(15, 23, 42, 0.72) !important;
+    color: #94a3b8 !important;
+
+    font-size: 11px !important;
+    font-weight: 900 !important;
+
+    box-shadow: none !important;
+  }
+
+  .filtros button:nth-child(1).filtro-activo,
+  .filtros button:nth-child(2).filtro-activo,
+  .filtros button:nth-child(3).filtro-activo {
+    background:
+      linear-gradient(135deg, rgba(250, 204, 21, 0.95), rgba(245, 158, 11, 0.95)) !important;
+
+    color: #111827 !important;
+    border-color: rgba(250, 204, 21, 0.85) !important;
+
+    box-shadow:
+      0 8px 22px rgba(250, 204, 21, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.32) !important;
+  }
+
+  /* Selects grandes */
+  .filtro-select {
+    grid-column: 1 / -1 !important;
+
+    min-height: 44px !important;
+    width: 100% !important;
+
+    padding: 11px 13px !important;
+    border-radius: 15px !important;
+
+    background:
+      linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.72)) !important;
+
+    color: #e5e7eb !important;
+    border: 1px solid rgba(148, 163, 184, 0.18) !important;
+
+    font-size: 13px !important;
+    font-weight: 800 !important;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 8px 18px rgba(0, 0, 0, 0.16) !important;
+
+    appearance: none;
+    background-image:
+      linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.72)),
+      linear-gradient(45deg, transparent 50%, #94a3b8 50%),
+      linear-gradient(135deg, #94a3b8 50%, transparent 50%);
+    background-position:
+      0 0,
+      calc(100% - 18px) 19px,
+      calc(100% - 12px) 19px;
+    background-size:
+      100% 100%,
+      6px 6px,
+      6px 6px;
+    background-repeat: no-repeat;
+  }
+
+  .filtro-select:focus {
+    border-color: rgba(250, 204, 21, 0.55) !important;
+    box-shadow:
+      0 0 0 2px rgba(250, 204, 21, 0.1),
+      0 10px 24px rgba(0, 0, 0, 0.22) !important;
+  }
+
+  /* Limpiar filtros y Actualizar */
+  .filtros button:nth-last-child(2),
+  .filtros button:last-child {
+    grid-column: span 3 !important;
+
+    min-height: 42px !important;
+    border-radius: 14px !important;
+
+    font-size: 12px !important;
+    font-weight: 900 !important;
+
+    box-shadow: none !important;
+  }
+
+  .filtros button:nth-last-child(2) {
+    background: rgba(15, 23, 42, 0.72) !important;
+    color: #cbd5e1 !important;
+    border: 1px dashed rgba(148, 163, 184, 0.28) !important;
+  }
+
+  .filtros button:last-child {
+    background:
+      linear-gradient(135deg, rgba(51, 65, 85, 0.95), rgba(30, 41, 59, 0.95)) !important;
+
+    color: #f8fafc !important;
+    border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  }
+
+  .filtros button:active,
+  .filtro-select:active {
+    transform: scale(0.98) !important;
+  }
+}
