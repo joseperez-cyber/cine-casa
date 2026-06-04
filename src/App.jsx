@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Link, NavLink, useNavigate } from "react-router";
+import { Routes, Route, NavLink, useNavigate } from "react-router";
 import "./App.css";
 import { supabase } from "./supabase";
 
@@ -842,8 +842,12 @@ function App() {
       </header>
 
       <nav className="rutas-prueba rutas-desktop">
-        <Link to="/">Pendientes</Link>
-        <Link to="/vistas">Vistas</Link>
+        <NavLink to="/" end>
+          Pendientes
+        </NavLink>
+        <NavLink to="/vistas">
+          Vistas
+        </NavLink>
       </nav>
 
       <Routes>
@@ -1017,13 +1021,21 @@ function App() {
                 )}
               </section>
 
-              <section className="panel-filtros-mobile panel-filtros-arriba">
+              <section className="filtros-top-mobile">
                 <button
-                  className="boton-desplegar-filtros"
+                  type="button"
+                  className={
+                    filtrosAbiertos
+                      ? "boton-filtros-mobile activo"
+                      : "boton-filtros-mobile"
+                  }
                   onClick={() => setFiltrosAbiertos(!filtrosAbiertos)}
                 >
+                  <span className="icon-filter-mini" aria-hidden="true"></span>
                   <span>Filtros</span>
-                  <span>{filtrosAbiertos ? "▲" : "▼"}</span>
+                  <span className="estado-filtros-mobile">
+                    {filtrosAbiertos ? "Cerrar" : "Abrir"}
+                  </span>
                 </button>
               </section>
 
@@ -1518,20 +1530,35 @@ function App() {
         </div>
       )}
 
-      <nav className="barra-mobile barra-mobile-tabs">
+      <nav className="barra-mobile-tabs" aria-label="Navegación móvil">
         <NavLink
           to="/"
           end
           className={({ isActive }) =>
             isActive ? "barra-mobile-link activo" : "barra-mobile-link"
           }
+          onClick={() => {
+            setFormularioAbierto(false);
+            setFiltrosAbiertos(false);
+            setSeleccionHoyAbierta(false);
+            setFiltro("pendientes");
+
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          }}
         >
-          <span>Pendientes</span>
+          <span className="mobile-link-label">Pendientes</span>
         </NavLink>
 
         <button
           type="button"
-          className="boton-mobile-agregar"
+          className={
+            formularioAbierto
+              ? "boton-mobile-agregar activo"
+              : "boton-mobile-agregar"
+          }
           onClick={() => {
             navigate("/");
             setFormularioAbierto(true);
@@ -1553,8 +1580,18 @@ function App() {
           className={({ isActive }) =>
             isActive ? "barra-mobile-link activo" : "barra-mobile-link"
           }
+          onClick={() => {
+            setFormularioAbierto(false);
+            setFiltrosAbiertos(false);
+            setSeleccionHoyAbierta(false);
+
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          }}
         >
-          <span>Vistas</span>
+          <span className="mobile-link-label">Vistas</span>
         </NavLink>
       </nav>
 
