@@ -1366,6 +1366,59 @@ function App() {
         </div>
       )}
 
+      <nav className="barra-mobile">
+        <button
+          type="button"
+          onClick={() => {
+            setFormularioAbierto(true);
+            setFiltrosAbiertos(false);
+            setSeleccionHoyAbierta(false);
+
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          }}
+        >
+          <span>＋</span>
+          <small>Agregar</small>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setFiltrosAbiertos(!filtrosAbiertos);
+            setFormularioAbierto(false);
+            setSeleccionHoyAbierta(false);
+
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          }}
+        >
+          <span>🔎</span>
+          <small>Filtros</small>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setSeleccionHoyAbierta(!seleccionHoyAbierta);
+            setFormularioAbierto(false);
+            setFiltrosAbiertos(false);
+
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          }}
+        >
+          <span>🏆</span>
+          <small>Mejor</small>
+        </button>
+      </nav>
+
       {trailerAbierto && peliculaSeleccionada?.trailer_key && (
         <div className="modal-trailer-fondo" onClick={() => setTrailerAbierto(false)}>
           <section

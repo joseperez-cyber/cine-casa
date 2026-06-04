@@ -3926,3 +3926,101 @@ textarea:focus {
     font-weight: 900;
   }
 }
+/* ================================================= */
+/* BARRA INFERIOR MÓVIL */
+/* ================================================= */
+
+.barra-mobile {
+  display: none;
+}
+
+@media (max-width: 650px) {
+  .contenedor {
+    padding-bottom: 92px !important;
+  }
+
+  .barra-mobile {
+    position: fixed;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    z-index: 9000;
+
+    width: min(92vw, 420px);
+    min-height: 64px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+
+    padding: 8px;
+
+    background:
+      radial-gradient(circle at top left, rgba(250, 204, 21, 0.12), transparent 34%),
+      rgba(15, 23, 42, 0.92);
+
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 24px;
+
+    backdrop-filter: blur(16px);
+    box-shadow:
+      0 18px 50px rgba(0, 0, 0, 0.48),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .barra-mobile button {
+    min-height: 50px;
+    padding: 6px 8px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+
+    background: rgba(30, 41, 59, 0.72);
+    color: var(--texto);
+
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 18px;
+
+    box-shadow: none;
+  }
+
+  .barra-mobile button span {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .barra-mobile button small {
+    font-size: 10px;
+    font-weight: 900;
+    color: #cbd5e1;
+  }
+
+  .barra-mobile button:active {
+    transform: scale(0.94);
+    background: rgba(250, 204, 21, 0.18);
+    border-color: rgba(250, 204, 21, 0.38);
+  }
+
+  .barra-mobile button:hover {
+    border-color: rgba(250, 204, 21, 0.32);
+  }
+
+  .modal-fondo,
+  .modal-trailer-fondo {
+    z-index: 10000 !important;
+  }
+}
+@media (max-width: 650px) {
+  .panel-agregar > .boton-desplegar-formulario,
+  .panel-filtros-mobile,
+  .panel-seleccion-hoy > .boton-desplegar-seleccion {
+    display: none;
+  }
+
+  .panel-agregar {
+    margin-bottom: 0;
+  }
+}
